@@ -10,6 +10,14 @@
 
   <article class="controls">
     <button (click)="playPause()">></button>
+    <progress
+      id='progress-bar'
+      #progressBar
+      min="0"
+      max="100"
+      value="0"
+      (click)="seek($event)"
+    ></progress>
   </article>
 </section>
 
