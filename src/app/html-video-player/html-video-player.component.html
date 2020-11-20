@@ -10,13 +10,18 @@
   </video>
 
   <article class="controls">
+
     <button (click)="playPause()">></button>
+
     <progress
       #progressBar
       max="100"
       [value]="progressValue"
       (click)="seek($event)"
     ></progress>
+
+    <button (click)=muteVolume()>Mute</button>
+
   </article>
 </section>
 

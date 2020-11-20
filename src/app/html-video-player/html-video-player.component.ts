@@ -25,10 +25,18 @@ export class HtmlVideoPlayerComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  get videoElement(): any {
+    return this.video.nativeElement;
+  }
+
+  get progressVideo(): any {
+    return this.progressBar.nativeElement;
+  }
+
   playPause(): void {
-    if (this.video.nativeElement.paused) {
-      this.video.nativeElement.play();
-      this.progressValue = this.progressBar.nativeElement.value;
+    if (this.videoElement.paused) {
+      this.videoElement.play();
+      this.progressValue = this.progressVideo.value;
 
       return;
     }
@@ -37,27 +45,34 @@ export class HtmlVideoPlayerComponent implements OnInit {
   }
 
   seek(event: MouseEvent): void {
-    const percent = event.offsetX / this.video.nativeElement.offsetWidth;
+    const percent = event.offsetX / this.videoElement.offsetWidth;
 
-    this.video.nativeElement.currentTime =
-      percent * this.video.nativeElement.duration;
+    this.videoElement.currentTime = percent * this.videoElement.duration;
 
     const target = event.target as HTMLTextAreaElement;
 
     this.progressValue = Math.floor(percent * 100);
-    target.innerHTML = this.progressBar.nativeElement.value + '% played';
+    target.innerHTML = this.progressVideo.value + '% played';
   }
 
   updateProgressBar(): void {
     // Work out how much of the media has played via the duration and currentTime parameters
     const currentTimeVideoPlayed = Math.floor(
-      (100 / this.video.nativeElement.duration) *
-        this.video.nativeElement.currentTime
+      (100 / this.videoElement.duration) * this.videoElement.currentTime
     );
 
     // Update the progress bar's value
     this.progressValue = currentTimeVideoPlayed;
-    this.progressBar.nativeElement.innerHTML =
-      currentTimeVideoPlayed + '% played';
+    this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
+  }
+
+  muteVolume(): void {
+    if (this.videoElement.muted) {
+      this.videoElement.muted = '';
+
+      return;
+    }
+
+    this.videoElement.muted = 'muted';
   }
 }
