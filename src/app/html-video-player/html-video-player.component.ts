@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-html-video-player',
@@ -8,8 +9,17 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 export class HtmlVideoPlayerComponent implements OnInit {
   readonly src = '../../assets/videos/movie.mp4';
 
+  videoOptions = {
+    width: 500,
+    height: 500,
+    src: '../../assets/videos/movie.mp4',
+    muted: 'muted',
+  };
+
   @ViewChild('video') video;
   @ViewChild('progressBar') progressBar;
+
+  progressValue = 0;
 
   constructor() {}
 
@@ -18,6 +28,7 @@ export class HtmlVideoPlayerComponent implements OnInit {
   playPause(): void {
     if (this.video.nativeElement.paused) {
       this.video.nativeElement.play();
+      this.progressValue = this.progressBar.nativeElement.value;
 
       return;
     }
@@ -32,7 +43,21 @@ export class HtmlVideoPlayerComponent implements OnInit {
       percent * this.video.nativeElement.duration;
 
     const target = event.target as HTMLTextAreaElement;
-    target.value = String(Math.floor(percent * 100));
+
+    this.progressValue = Math.floor(percent * 100);
     target.innerHTML = this.progressBar.nativeElement.value + '% played';
+  }
+
+  updateProgressBar(): void {
+    // Work out how much of the media has played via the duration and currentTime parameters
+    const currentTimeVideoPlayed = Math.floor(
+      (100 / this.video.nativeElement.duration) *
+        this.video.nativeElement.currentTime
+    );
+
+    // Update the progress bar's value
+    this.progressValue = currentTimeVideoPlayed;
+    this.progressBar.nativeElement.innerHTML =
+      currentTimeVideoPlayed + '% played';
   }
 }

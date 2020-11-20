@@ -1,21 +1,20 @@
 <section>
   <video
     #video
-    width="500"
-    height="250"
-    [src]="src"
-    [muted]="'muted'"
+    [width]="videoOptions.width"
+    [height]="videoOptions.height"
+    [src]="videoOptions.src"
+    [muted]="videoOptions.muted"
+    (timeupdate)="updateProgressBar()"
   >
   </video>
 
   <article class="controls">
     <button (click)="playPause()">></button>
     <progress
-      id='progress-bar'
       #progressBar
-      min="0"
       max="100"
-      value="0"
+      [value]="progressValue"
       (click)="seek($event)"
     ></progress>
   </article>
