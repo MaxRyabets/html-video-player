@@ -7,8 +7,6 @@ import { VideoOptions } from './video-options.interface';
   styleUrls: ['./html-video-player.component.scss'],
 })
 export class HtmlVideoPlayerComponent implements OnInit {
-  readonly src = '../../assets/videos/movie.mp4';
-
   videoOptions: VideoOptions = {
     width: 500,
     height: 500,
@@ -20,8 +18,6 @@ export class HtmlVideoPlayerComponent implements OnInit {
   @ViewChild('progressBar') progressBar;
 
   progressValue = 0;
-
-  constructor() {}
 
   ngOnInit(): void {}
 
