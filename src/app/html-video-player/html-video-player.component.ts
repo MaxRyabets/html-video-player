@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { VideoOptions } from './video-options.interface';
 
 @Component({
   selector: 'app-html-video-player',
@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class HtmlVideoPlayerComponent implements OnInit {
   readonly src = '../../assets/videos/movie.mp4';
 
-  videoOptions = {
+  videoOptions: VideoOptions = {
     width: 500,
     height: 500,
     src: '../../assets/videos/movie.mp4',
