@@ -75,4 +75,8 @@ export class HtmlVideoPlayerComponent implements OnInit {
 
     this.videoElement.muted = 'muted';
   }
+
+  fullScreen(): void {
+    this.videoElement.requestFullscreen();
+  }
 }
