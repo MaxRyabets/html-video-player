@@ -1,31 +1,34 @@
 <section>
-  <video
-    #video
-    [width]="videoOptions.width"
-    [height]="videoOptions.height"
-    [src]="videoOptions.src"
-    [muted]="videoOptions.muted"
-    (timeupdate)="updateProgressBar()"
-  >
-  </video>
+  <figure>
+    <video
+      #video
+      [width]="videoOptions.width"
+      [height]="videoOptions.height"
+      [src]="videoOptions.src"
+      [muted]="videoOptions.muted"
+      (timeupdate)="updateProgressBar()"
+    >
+    </video>
 
-  <article class="controls">
+    <figcaption class="controls">
 
-    <button (click)="playPause()">></button>
+      <button #playPause>></button>
+      <progress
+        #progressBar
+        id="progress"
+        max="100"
+        [value]="progressValue"
+        (click)="seek($event)"
+        (change)="test($event)"
+      ></progress>
 
-    <progress
-      #progressBar
-      max="100"
-      [value]="progressValue"
-      (click)="seek($event)"
-    ></progress>
+      <button (click)=muteVolume()>Mute</button>
 
-    <button (click)=muteVolume()>Mute</button>
+      <button (click)=fullScreen()>FullScreen</button>
 
-    <button (click)=fullScreen()>FullScreen</button>
+      <button #loopSegment>LoopVideoSegment</button>
 
-    <button #loopSegment>LoopVideoSegment</button>
-
-  </article>
+    </figcaption>
+  </figure>
 </section>
 

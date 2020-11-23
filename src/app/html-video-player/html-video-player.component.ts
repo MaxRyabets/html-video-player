@@ -1,14 +1,12 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
-import { fromEvent, merge, Observable } from 'rxjs';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import {
   bufferCount,
-  filter,
+  skip,
   skipWhile,
   switchMap,
-  take,
   takeUntil,
-  takeWhile,
   tap,
 } from 'rxjs/operators';
 
@@ -17,25 +15,27 @@ import {
   templateUrl: './html-video-player.component.html',
   styleUrls: ['./html-video-player.component.scss'],
 })
-export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit {
+export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   private isLoopVideoSegment = false;
   private startSegment: number;
   private endSegment: number;
 
+  destroy$ = new Subject();
+
+  // for local src ../../assets/videos/movie.mp4
   videoOptions: VideoOptions = {
     width: 500,
     height: 500,
-    src: '../../assets/videos/movie.mp4',
+    src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
     muted: 'muted',
   };
 
   @ViewChild('video') video;
   @ViewChild('progressBar') progressBar;
   @ViewChild('loopSegment') loopSegment;
+  @ViewChild('playPause') playPause;
 
   progressValue = 0;
-
-  ngOnInit(): void {}
 
   get videoElement(): any {
     return this.video.nativeElement;
@@ -43,17 +43,6 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit {
 
   get progressVideo(): any {
     return this.progressBar.nativeElement;
-  }
-
-  playPause(): void {
-    if (this.videoElement.paused) {
-      this.videoElement.play();
-      this.progressValue = this.progressVideo.value;
-
-      return;
-    }
-
-    this.video.nativeElement.pause();
   }
 
   seek(event: MouseEvent): void {
@@ -109,10 +98,34 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit {
         switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
       )
       .subscribe();
+
+    fromEvent(this.playPause.nativeElement, 'click')
+      .pipe(
+        tap(() => {
+          if (this.videoElement.paused) {
+            this.videoElement.play();
+
+            if (this.isInitSegments()) {
+              this.videoElement.currentTime = this.startSegment;
+            }
+
+            return;
+          }
+
+          this.video.nativeElement.pause();
+        })
+      )
+      .subscribe();
   }
 
-  clickOnProgressBarAfterStartLoopSegment(): Observable<unknown[]> {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private clickOnProgressBarAfterStartLoopSegment(): Observable<unknown[]> {
     return fromEvent(this.progressVideo, 'click').pipe(
+      takeUntil(this.destroy$),
       tap(() => {
         if (this.startSegment === undefined) {
           this.startSegment = this.videoElement.currentTime;
@@ -141,23 +154,6 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private saveStartEndSegments(): void {
-    if (this.startSegment === undefined) {
-      this.startSegment = this.videoElement.currentTime;
-    }
-
-    if (
-      this.isInitSegment(this.startSegment) &&
-      this.endSegment === undefined
-    ) {
-      this.endSegment = this.videoElement.currentTime;
-    }
-
-    if (this.isInitSegments()) {
-      this.isLoopVideoSegment = false;
-    }
-  }
-
   private isInitSegment(segment: number): boolean {
     return typeof segment === 'number' && !isNaN(segment);
   }
@@ -167,5 +163,15 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit {
       this.isInitSegment(this.startSegment) &&
       this.isInitSegment(this.endSegment)
     );
+  }
+
+  test($event: Event): void {
+    console.log($event);
+    if (
+      this.isLoopVideoSegment &&
+      this.videoElement.currentTime === this.endSegment
+    ) {
+      this.videoElement.currentTime = this.startSegment;
+    }
   }
 }
