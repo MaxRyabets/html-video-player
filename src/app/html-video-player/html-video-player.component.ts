@@ -1,14 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
-import {
-  bufferCount,
-  skip,
-  skipWhile,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs/operators';
+import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-html-video-player',
@@ -93,13 +86,12 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       'click'
     ).pipe(
       tap(() => {
-        if (this.videoElement.paused) {
-          this.videoElement.play();
-          this.playPause.nativeElement.innerHTML = '❙❙';
+        if (this.isInitSegments()) {
+          this.videoElement.currentTime = this.startSegment;
+        }
 
-          if (this.isInitSegments()) {
-            this.videoElement.currentTime = this.startSegment;
-          }
+        if (this.videoElement.paused) {
+          this.play();
 
           return;
         }
@@ -178,6 +170,11 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   private pause(): void {
     this.videoElement.pause();
     this.playPause.nativeElement.innerHTML = '►';
+  }
+
+  private play(): void {
+    this.videoElement.play();
+    this.playPause.nativeElement.innerHTML = '❙❙';
   }
 
   private isInitSegment(segment: number): boolean {
