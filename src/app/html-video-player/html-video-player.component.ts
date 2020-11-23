@@ -1,12 +1,27 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
+import { fromEvent, merge, Observable } from 'rxjs';
+import {
+  bufferCount,
+  filter,
+  skipWhile,
+  switchMap,
+  take,
+  takeUntil,
+  takeWhile,
+  tap,
+} from 'rxjs/operators';
 
 @Component({
   selector: 'app-html-video-player',
   templateUrl: './html-video-player.component.html',
   styleUrls: ['./html-video-player.component.scss'],
 })
-export class HtmlVideoPlayerComponent implements OnInit {
+export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit {
+  private isLoopVideoSegment = false;
+  private startSegment: number;
+  private endSegment: number;
+
   videoOptions: VideoOptions = {
     width: 500,
     height: 500,
@@ -16,6 +31,7 @@ export class HtmlVideoPlayerComponent implements OnInit {
 
   @ViewChild('video') video;
   @ViewChild('progressBar') progressBar;
+  @ViewChild('loopSegment') loopSegment;
 
   progressValue = 0;
 
@@ -74,5 +90,82 @@ export class HtmlVideoPlayerComponent implements OnInit {
 
   fullScreen(): void {
     this.videoElement.requestFullscreen();
+  }
+
+  ngAfterViewInit(): void {
+    fromEvent(this.loopSegment.nativeElement, 'click')
+      .pipe(
+        tap(() => {
+          if (this.isLoopVideoSegment) {
+            this.isLoopVideoSegment = false;
+
+            return;
+          }
+
+          this.isLoopVideoSegment = true;
+
+          this.videoElement.pause();
+        }),
+        switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
+      )
+      .subscribe();
+  }
+
+  clickOnProgressBarAfterStartLoopSegment(): Observable<unknown[]> {
+    return fromEvent(this.progressVideo, 'click').pipe(
+      tap(() => {
+        if (this.startSegment === undefined) {
+          this.startSegment = this.videoElement.currentTime;
+        }
+      }),
+      bufferCount(2),
+      tap(() => {
+        if (
+          this.isInitSegment(this.startSegment) &&
+          this.endSegment === undefined
+        ) {
+          this.endSegment = this.videoElement.currentTime;
+        }
+
+        if (this.isInitSegments()) {
+          this.isLoopVideoSegment = false;
+        }
+
+        console.log(
+          'startSegment',
+          this.startSegment,
+          'endSegment',
+          this.endSegment
+        );
+      })
+    );
+  }
+
+  private saveStartEndSegments(): void {
+    if (this.startSegment === undefined) {
+      this.startSegment = this.videoElement.currentTime;
+    }
+
+    if (
+      this.isInitSegment(this.startSegment) &&
+      this.endSegment === undefined
+    ) {
+      this.endSegment = this.videoElement.currentTime;
+    }
+
+    if (this.isInitSegments()) {
+      this.isLoopVideoSegment = false;
+    }
+  }
+
+  private isInitSegment(segment: number): boolean {
+    return typeof segment === 'number' && !isNaN(segment);
+  }
+
+  private isInitSegments(): boolean {
+    return (
+      this.isInitSegment(this.startSegment) &&
+      this.isInitSegment(this.endSegment)
+    );
   }
 }
