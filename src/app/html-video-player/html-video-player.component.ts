@@ -9,7 +9,7 @@ import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
   styleUrls: ['./html-video-player.component.scss'],
 })
 export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
-  private isLoopVideoSegment = false;
+  private isDisabledLoopVideoSegment = false;
   private startSegment: number;
   private endSegment: number;
 
@@ -69,13 +69,16 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       'click'
     ).pipe(
       tap(() => {
-        if (this.isLoopVideoSegment) {
-          this.isLoopVideoSegment = false;
+        if (this.isDisabledLoopVideoSegment) {
+          this.isDisabledLoopVideoSegment = false;
+
+          this.startSegment = undefined;
+          this.endSegment = undefined;
 
           return;
         }
 
-        this.isLoopVideoSegment = true;
+        this.isDisabledLoopVideoSegment = true;
         this.pause();
       }),
       switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
@@ -106,7 +109,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
     ).pipe(
       tap(() => {
         if (
-          this.isLoopVideoSegment &&
+          this.isDisabledLoopVideoSegment &&
           this.videoElement.currentTime >= this.endSegment
         ) {
           this.videoElement.currentTime = this.startSegment;
@@ -152,17 +155,6 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
         ) {
           this.endSegment = this.videoElement.currentTime;
         }
-
-        /*if (this.isInitSegments()) {
-          this.isLoopVideoSegment = false;
-        }*/
-
-        console.log(
-          'startSegment',
-          this.startSegment,
-          'endSegment',
-          this.endSegment
-        );
       })
     );
   }
