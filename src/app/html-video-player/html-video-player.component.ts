@@ -12,17 +12,19 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   private isDisabledLoopVideoSegment = false;
   private startSegment: number;
   private endSegment: number;
+  private isFullScreen = false;
 
   destroy$ = new Subject();
 
   // for local src ../../assets/videos/movie.mp4
   videoOptions: VideoOptions = {
-    width: 500,
-    height: 500,
+    width: 700,
+    height: 300,
     src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
     muted: '',
   };
 
+  @ViewChild('containerVideoElement') containerVideoElement;
   @ViewChild('video') video;
   @ViewChild('progressBarVideo') progressBarVideo;
   @ViewChild('loopSegment') loopSegment;
@@ -37,6 +39,10 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
 
   get progressVideo(): any {
     return this.progressBarVideo.nativeElement;
+  }
+
+  get containerVideo(): any {
+    return this.containerVideoElement.nativeElement;
   }
 
   setProgressVideoValue(event: MouseEvent): void {
@@ -56,7 +62,15 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   fullScreen(): void {
-    this.videoElement.requestFullscreen();
+    if (!this.isFullScreen) {
+      this.containerVideo.requestFullscreen();
+      this.isFullScreen = true;
+
+      return;
+    }
+
+    this.isFullScreen = false;
+    document.exitFullscreen();
   }
 
   changeVolume(event: Event): void {
