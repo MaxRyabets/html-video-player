@@ -6,7 +6,6 @@
       [height]="videoOptions.height"
       [src]="videoOptions.src"
       [muted]="videoOptions.muted"
-      (timeupdate)="updateProgressBar()"
     >
     </video>
 
@@ -17,9 +16,8 @@
         #progressBar
         id="progress"
         max="100"
-        [value]="progressValue"
+        [value]="progressBarValue"
         (click)="seek($event)"
-        (change)="test($event)"
       ></progress>
 
       <button (click)=muteVolume()>Mute</button>

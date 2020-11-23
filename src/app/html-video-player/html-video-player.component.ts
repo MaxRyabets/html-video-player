@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import {
   bufferCount,
   skip,
@@ -35,7 +35,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loopSegment') loopSegment;
   @ViewChild('playPause') playPause;
 
-  progressValue = 0;
+  progressBarValue = 0;
 
   get videoElement(): any {
     return this.video.nativeElement;
@@ -52,19 +52,8 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
 
     const target = event.target as HTMLTextAreaElement;
 
-    this.progressValue = Math.floor(percent * 100);
+    this.progressBarValue = Math.floor(percent * 100);
     target.innerHTML = this.progressVideo.value + '% played';
-  }
-
-  updateProgressBar(): void {
-    // Work out how much of the media has played via the duration and currentTime parameters
-    const currentTimeVideoPlayed = Math.floor(
-      (100 / this.videoElement.duration) * this.videoElement.currentTime
-    );
-
-    // Update the progress bar's value
-    this.progressValue = currentTimeVideoPlayed;
-    this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
   }
 
   muteVolume(): void {
@@ -82,43 +71,72 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    fromEvent(this.loopSegment.nativeElement, 'click')
-      .pipe(
-        tap(() => {
-          if (this.isLoopVideoSegment) {
-            this.isLoopVideoSegment = false;
+    const clickOnLoopSegment$ = fromEvent(
+      this.loopSegment.nativeElement,
+      'click'
+    ).pipe(
+      tap(() => {
+        if (this.isLoopVideoSegment) {
+          this.isLoopVideoSegment = false;
 
-            return;
-          }
+          return;
+        }
 
-          this.isLoopVideoSegment = true;
+        this.isLoopVideoSegment = true;
+        this.pause();
+      }),
+      switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
+    );
 
-          this.videoElement.pause();
-        }),
-        switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
-      )
-      .subscribe();
-
-    fromEvent(this.playPause.nativeElement, 'click')
-      .pipe(
-        tap(() => {
-          if (this.videoElement.paused) {
-            this.videoElement.play();
-            this.playPause.nativeElement.innerHTML = '►';
-
-            if (this.isInitSegments()) {
-              this.videoElement.currentTime = this.startSegment;
-            }
-
-            return;
-          }
-
-          console.log('test');
-          this.video.nativeElement.pause();
+    const clickOnPlayPause$ = fromEvent(
+      this.playPause.nativeElement,
+      'click'
+    ).pipe(
+      tap(() => {
+        if (this.videoElement.paused) {
+          this.videoElement.play();
           this.playPause.nativeElement.innerHTML = '❙❙';
-        })
-      )
-      .subscribe();
+
+          if (this.isInitSegments()) {
+            this.videoElement.currentTime = this.startSegment;
+          }
+
+          return;
+        }
+
+        this.pause();
+      })
+    );
+
+    const timeUpdateProgressBar$ = fromEvent(
+      this.videoElement,
+      'timeupdate'
+    ).pipe(
+      tap(() => {
+        if (
+          this.isLoopVideoSegment &&
+          this.videoElement.currentTime >= this.endSegment
+        ) {
+          this.videoElement.currentTime = this.startSegment;
+        }
+
+        if (!this.videoElement.paused) {
+          // Work out how much of the media has played via the duration and currentTime parameters
+          const currentTimeVideoPlayed = Math.floor(
+            (100 / this.videoElement.duration) * this.videoElement.currentTime
+          );
+
+          this.progressBarValue = currentTimeVideoPlayed;
+          this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
+        }
+      })
+    );
+
+    merge(
+      clickOnLoopSegment$,
+      clickOnPlayPause$,
+      timeUpdateProgressBar$
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -143,9 +161,9 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
           this.endSegment = this.videoElement.currentTime;
         }
 
-        if (this.isInitSegments()) {
+        /*if (this.isInitSegments()) {
           this.isLoopVideoSegment = false;
-        }
+        }*/
 
         console.log(
           'startSegment',
@@ -157,6 +175,11 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
     );
   }
 
+  private pause(): void {
+    this.videoElement.pause();
+    this.playPause.nativeElement.innerHTML = '►';
+  }
+
   private isInitSegment(segment: number): boolean {
     return typeof segment === 'number' && !isNaN(segment);
   }
@@ -166,15 +189,5 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       this.isInitSegment(this.startSegment) &&
       this.isInitSegment(this.endSegment)
     );
-  }
-
-  test($event: Event): void {
-    console.log($event);
-    if (
-      this.isLoopVideoSegment &&
-      this.videoElement.currentTime === this.endSegment
-    ) {
-      this.videoElement.currentTime = this.startSegment;
-    }
   }
 }
