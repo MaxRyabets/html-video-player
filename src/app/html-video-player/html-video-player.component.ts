@@ -20,17 +20,16 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
     width: 500,
     height: 500,
     src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
-    muted: 'muted',
+    muted: '',
   };
 
   @ViewChild('video') video;
   @ViewChild('progressBarVideo') progressBarVideo;
-  @ViewChild('progressBarVolume') progressBarVolume;
   @ViewChild('loopSegment') loopSegment;
   @ViewChild('playPause') playPause;
 
-  progressVideoBarValue = 0;
-  progressVolumeValue = 100;
+  progressBarVideoValue = 0;
+  progressBarVolumeValue = 1;
 
   get videoElement(): any {
     return this.video.nativeElement;
@@ -40,25 +39,14 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
     return this.progressBarVideo.nativeElement;
   }
 
-  get progressVolume(): any {
-    return this.progressBarVolume.nativeElement;
-  }
-
-  seekProgressVideoValue(event: MouseEvent): void {
-    const percent = event.offsetX / this.videoElement.offsetWidth;
-
-    this.videoElement.currentTime = percent * this.videoElement.duration;
-
+  setProgressVideoValue(event: MouseEvent): void {
     const target = event.target as HTMLTextAreaElement;
-
-    this.progressVideoBarValue = Math.floor(percent * 100);
-    target.innerHTML = this.progressVideo.value + '% played';
+    this.videoElement.currentTime = target.value;
+    this.progressBarVideoValue = +target.value;
   }
-
-  seekVolumeValue($event: MouseEvent): void {}
 
   muteVolume(): void {
-    if (this.videoElement.muted) {
+    if (this.videoElement.muted && this.progressBarVolumeValue >= 0) {
       this.videoElement.muted = false;
 
       return;
@@ -69,6 +57,11 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
 
   fullScreen(): void {
     this.videoElement.requestFullscreen();
+  }
+
+  changeVolume(event: Event): void {
+    const target = event.target as HTMLTextAreaElement;
+    this.videoElement.volume = target.value;
   }
 
   ngAfterViewInit(): void {
@@ -125,7 +118,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
             (100 / this.videoElement.duration) * this.videoElement.currentTime
           );
 
-          this.progressVideoBarValue = currentTimeVideoPlayed;
+          this.progressBarVideoValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
         }
       })

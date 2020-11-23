@@ -10,26 +10,27 @@
     </video>
 
     <figcaption class="controls">
-
       <button #playPause>►</button>
+
       <input
         #progressBarVideo
-        class="progressBarVideo"
         type="range"
+        class="progressBarVideo"
         min="0"
-        max="100"
-        [value]="progressVideoBarValue"
-        (click)="seekProgressVideoValue($event)"
+        [max]="video.duration"
+        step="1"
+        [value]="progressBarVideoValue"
+        (click)="setProgressVideoValue($event)"
       />
 
       <input
-        #progressBarVolume
         type="range"
         class="progressBarVolume"
         min="0"
-        max="100"
-        [value]="progressVolumeValue"
-        (click)="seekVolumeValue($event)"
+        max="1"
+        step="0.1"
+        [value]="progressBarVolumeValue"
+        (change)="changeVolume($event)"
       />
 
       <button (click)=muteVolume()>Mute</button>
@@ -37,7 +38,6 @@
       <button (click)=fullScreen()>FullScreen</button>
 
       <button #loopSegment>LoopVideoSegment</button>
-
     </figcaption>
   </figure>
 </section>
