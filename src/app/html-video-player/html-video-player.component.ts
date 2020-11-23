@@ -104,6 +104,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
         tap(() => {
           if (this.videoElement.paused) {
             this.videoElement.play();
+            this.videoElement.innerHTML = '►';
 
             if (this.isInitSegments()) {
               this.videoElement.currentTime = this.startSegment;
@@ -112,6 +113,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
             return;
           }
 
+          this.videoElement.innerHTML = '❙❙';
           this.video.nativeElement.pause();
         })
       )
