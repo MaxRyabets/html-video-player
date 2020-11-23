@@ -24,18 +24,24 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   };
 
   @ViewChild('video') video;
-  @ViewChild('progressVideoBar') progressVideoBar;
+  @ViewChild('progressBarVideo') progressBarVideo;
+  @ViewChild('progressBarVolume') progressBarVolume;
   @ViewChild('loopSegment') loopSegment;
   @ViewChild('playPause') playPause;
 
   progressVideoBarValue = 0;
+  progressVolumeValue = 100;
 
   get videoElement(): any {
     return this.video.nativeElement;
   }
 
   get progressVideo(): any {
-    return this.progressVideoBar.nativeElement;
+    return this.progressBarVideo.nativeElement;
+  }
+
+  get progressVolume(): any {
+    return this.progressBarVolume.nativeElement;
   }
 
   seekProgressVideoValue(event: MouseEvent): void {
@@ -49,14 +55,16 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
     target.innerHTML = this.progressVideo.value + '% played';
   }
 
+  seekVolumeValue($event: MouseEvent): void {}
+
   muteVolume(): void {
     if (this.videoElement.muted) {
-      this.videoElement.muted = '';
+      this.videoElement.muted = false;
 
       return;
     }
 
-    this.videoElement.muted = 'muted';
+    this.videoElement.muted = true;
   }
 
   fullScreen(): void {

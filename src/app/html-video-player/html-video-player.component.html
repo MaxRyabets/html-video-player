@@ -12,13 +12,25 @@
     <figcaption class="controls">
 
       <button #playPause>►</button>
-      <progress
-        #progressVideoBar
-        class="progressVideoBar"
+      <input
+        #progressBarVideo
+        class="progressBarVideo"
+        type="range"
+        min="0"
         max="100"
         [value]="progressVideoBarValue"
         (click)="seekProgressVideoValue($event)"
-      ></progress>
+      />
+
+      <input
+        #progressBarVolume
+        type="range"
+        class="progressBarVolume"
+        min="0"
+        max="100"
+        [value]="progressVolumeValue"
+        (click)="seekVolumeValue($event)"
+      />
 
       <button (click)=muteVolume()>Mute</button>
 

@@ -1,27 +1,6 @@
 .controls {
-  .progressVideoBar {
-    color: green;
-    font-size: 12px;
+  .progressBarVideo {
     width: 510px;
-    height: 16px;
     border: none;
-    margin-right: 10px;
-    background: #434343;
-    border-radius: 9px;
-    vertical-align: middle;
-  }
-
-  .progressVideoBar[value] {
-    &::-webkit-progress-bar {
-      background-color: #434343;
-      border-radius: 2px;
-      box-shadow: 0 2px 5px rgba(236, 16, 16, 0.25) inset;
-    }
-  }
-
-  .progressVideoBar[value] {
-    &::-webkit-progress-value {
-      background-color: green;
-    }
   }
 }
