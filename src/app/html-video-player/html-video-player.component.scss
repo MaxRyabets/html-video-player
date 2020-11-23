@@ -1,9 +1,5 @@
-video::-webkit-media-controls {
-  display:none !important;
-}
-
 .controls {
-  progress {
+  .progressVideoBar {
     color: green;
     font-size: 12px;
     width: 510px;
@@ -15,16 +11,15 @@ video::-webkit-media-controls {
     vertical-align: middle;
   }
 
-  progress[value] {
+  .progressVideoBar[value] {
     &::-webkit-progress-bar {
       background-color: #434343;
       border-radius: 2px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+      box-shadow: 0 2px 5px rgba(236, 16, 16, 0.25) inset;
     }
-
   }
 
-  progress[value] {
+  .progressVideoBar[value] {
     &::-webkit-progress-value {
       background-color: green;
     }

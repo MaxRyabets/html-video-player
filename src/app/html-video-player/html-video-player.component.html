@@ -13,11 +13,11 @@
 
       <button #playPause>►</button>
       <progress
-        #progressBar
-        id="progress"
+        #progressVideoBar
+        class="progressVideoBar"
         max="100"
-        [value]="progressBarValue"
-        (click)="seek($event)"
+        [value]="progressVideoBarValue"
+        (click)="seekProgressVideoValue($event)"
       ></progress>
 
       <button (click)=muteVolume()>Mute</button>

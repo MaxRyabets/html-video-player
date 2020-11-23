@@ -24,28 +24,28 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   };
 
   @ViewChild('video') video;
-  @ViewChild('progressBar') progressBar;
+  @ViewChild('progressVideoBar') progressVideoBar;
   @ViewChild('loopSegment') loopSegment;
   @ViewChild('playPause') playPause;
 
-  progressBarValue = 0;
+  progressVideoBarValue = 0;
 
   get videoElement(): any {
     return this.video.nativeElement;
   }
 
   get progressVideo(): any {
-    return this.progressBar.nativeElement;
+    return this.progressVideoBar.nativeElement;
   }
 
-  seek(event: MouseEvent): void {
+  seekProgressVideoValue(event: MouseEvent): void {
     const percent = event.offsetX / this.videoElement.offsetWidth;
 
     this.videoElement.currentTime = percent * this.videoElement.duration;
 
     const target = event.target as HTMLTextAreaElement;
 
-    this.progressBarValue = Math.floor(percent * 100);
+    this.progressVideoBarValue = Math.floor(percent * 100);
     target.innerHTML = this.progressVideo.value + '% played';
   }
 
@@ -117,7 +117,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
             (100 / this.videoElement.duration) * this.videoElement.currentTime
           );
 
-          this.progressBarValue = currentTimeVideoPlayed;
+          this.progressVideoBarValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
         }
       })
