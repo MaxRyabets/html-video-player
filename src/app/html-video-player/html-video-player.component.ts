@@ -89,10 +89,6 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       'click'
     ).pipe(
       tap(() => {
-        if (this.isInitSegments()) {
-          this.videoElement.currentTime = this.startSegment;
-        }
-
         if (this.videoElement.paused) {
           this.play();
 
@@ -110,7 +106,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       tap(() => {
         if (
           this.isDisabledLoopVideoSegment &&
-          this.videoElement.currentTime >= this.endSegment
+          this.videoElement.currentTime > this.endSegment
         ) {
           this.videoElement.currentTime = this.startSegment;
         }
@@ -149,10 +145,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       }),
       bufferCount(2),
       tap(() => {
-        if (
-          this.isInitSegment(this.startSegment) &&
-          this.endSegment === undefined
-        ) {
+        if (this.isInitStartSegment(this.startSegment)) {
           this.endSegment = this.videoElement.currentTime;
         }
       })
@@ -169,14 +162,11 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
     this.playPause.nativeElement.innerHTML = '❙❙';
   }
 
-  private isInitSegment(segment: number): boolean {
-    return typeof segment === 'number' && !isNaN(segment);
-  }
-
-  private isInitSegments(): boolean {
+  private isInitStartSegment(segment: number): boolean {
     return (
-      this.isInitSegment(this.startSegment) &&
-      this.isInitSegment(this.endSegment)
+      typeof segment === 'number' &&
+      !isNaN(segment) &&
+      this.endSegment === undefined
     );
   }
 }
