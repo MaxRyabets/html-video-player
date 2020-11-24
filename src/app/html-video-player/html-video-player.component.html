@@ -10,53 +10,65 @@
     </video>
 
     <figcaption class="controls">
-      <button #playPause class="play-pause">
-        <img *ngIf="!isPlay" src="../../assets/images/icons/play-button.png" alt="play">
-        <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
-      </button>
 
-      <input
-        #progressBarVideo
-        type="range"
-        class="progressBarVideo"
-        min="0"
-        [max]="video.duration"
-        step="1"
-        [value]="progressBarVideoValue"
-        (click)="setProgressVideoValue($event)"
-      />
+      <div class="container-progress-bar-video">
+        <input
+          #progressBarVideo
+          type="range"
+          class="progress-bar-video"
+          min="0"
+          [max]="video.duration"
+          step="1"
+          [value]="progressBarVideoValue"
+          (click)="setProgressVideoValue($event)"
+        />
+      </div>
 
-      <input
-        type="range"
-        class="progressBarVolume"
-        min="0"
-        max="1"
-        step="0.1"
-        [value]="progressBarVolumeValue"
-        (change)="changeVolume($event)"
-      />
+      <div class="container-buttons-controls">
 
-      <button (click)=muteVolume()>Mute</button>
+        <div class="play-pause-volume">
+          <button #playPause class="play-pause">
+            <img *ngIf="!isPlay" src="../../assets/images/icons/play-button.png" alt="play">
+            <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
+          </button>
 
-      <button (click)=fullScreen()>FullScreen</button>
+          <button (click)=muteVolume()>Mute</button>
 
-      <button #loopSegment>LoopVideoSegment</button>
+          <input
+            type="range"
+            class="progressBarVolume"
+            min="0"
+            max="1"
+            step="0.1"
+            [value]="progressBarVolumeValue"
+            (change)="changeVolume($event)"
+          />
+        </div>
 
-      <button (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
-        <img src="assets/images/icons/settings.png" alt="settings"/>
-      </button>
+        <div class="other-controls">
+          <button (click)=fullScreen()>FullScreen</button>
 
-      <ng-template
-        cdkConnectedOverlay
-        [cdkConnectedOverlayOrigin]="trigger"
-        [cdkConnectedOverlayOpen]="isOpen"
-      >
-        <ul class="setting-list">
-          <li>
-            <button (click)="snapshot()">Screen</button>
-          </li>
-        </ul>
-      </ng-template>
+          <button #loopSegment>LoopVideoSegment</button>
+
+          <button (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+            <img src="assets/images/icons/settings.png" alt="settings"/>
+          </button>
+
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="trigger"
+            [cdkConnectedOverlayOpen]="isOpen"
+          >
+            <ul class="setting-list">
+              <li>
+                <button (click)="snapshot()">Screen</button>
+              </li>
+            </ul>
+          </ng-template>
+        </div>
+      </div>
+
+
 
     </figcaption>
   </figure>

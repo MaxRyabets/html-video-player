@@ -16,16 +16,38 @@ video {
 }
 
 .controls {
-  .progressBarVideo {
-    width: 510px;
-    border: none;
+
+  .container-progress-bar-video {
+    .progress-bar-video {
+      width: 100%;
+      border: none;
+    }
   }
 
-  .play-pause {
-    border: none;
-    background: none;
-    outline: none;
+  .container-buttons-controls {
+    display: flex;
+    justify-content: space-between;
+
+    .play-pause-volume {
+      display: flex;
+
+      .play-pause {
+        padding-left: unset;
+        border: none;
+        background: none;
+        outline: none;
+      }
+    }
+
+    .other-controls {
+      display: flex;
+    }
+
+
+
+
   }
+
 }
 
 .setting-list {
