@@ -10,7 +10,6 @@ video {
 }
 
 .controls {
-
   .container-progress-bar-video {
     .progress-bar-video {
       width: 100%;
@@ -81,9 +80,11 @@ video {
 
   .controlsFullScreen {
     width: 100%;
+    margin-bottom: 15px;
   }
 }
 
 input[type="range"] {
   cursor: pointer;
+  margin: unset;
 }
