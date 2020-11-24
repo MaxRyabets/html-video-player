@@ -23,8 +23,10 @@ video {
     justify-content: space-between;
 
     .btn-controls {
+      display: flex;
+      justify-content: center;
       width: 25px;
-      padding-left: unset;
+      padding: unset;
       border: none;
       background: none;
       outline: none;
@@ -37,6 +39,30 @@ video {
 
     .other-controls {
       display: flex;
+
+      .container-popup-other-controls {
+        position: relative;
+        top: 0;
+        left: 0;
+
+        .other-controls-hidden {
+          display: none;
+        }
+
+        .popupOtherControls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          width: 40px;
+          top: -80px;
+          right: 10px;
+          padding: 10px;
+          background-color: #d1f2f8;;
+          border: 1px solid #acbec4;
+          text-align: center;
+        }
+      }
     }
   }
 }
@@ -59,24 +85,4 @@ video {
 
 input[type="range"] {
   cursor: pointer;
-}
-
-.setting-list {
-  width: 100px;
-  border: solid 1px #ccc;
-  border-radius: 5px;
-  background: #fff;
-  text-align: center;
-  padding: 10px;
-  margin: 0;
-}
-
-.setting-list > li {
-  list-style-type: none;
-  border-bottom: solid 1px #8b8b8b;
-  padding: 8px 0;
-}
-
-.setting-list > li:last-child {
-  border-bottom: none;
 }

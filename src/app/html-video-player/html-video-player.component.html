@@ -57,25 +57,21 @@
             <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
           </button>
 
-          <button class="btn-controls" (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
-            <img src="assets/images/icons/settings.png" alt="settings"/>
-          </button>
-
           <button class="btn-controls" (click)=fullScreen()>
             <img src="../../assets/images/icons/fullscreen.png" alt="fullscreen">
           </button>
 
-          <ng-template
-            cdkConnectedOverlay
-            [cdkConnectedOverlayOrigin]="trigger"
-            [cdkConnectedOverlayOpen]="isOpen"
-          >
-            <ul class="setting-list">
-              <li>
-                <button (click)="snapshot()">Screen</button>
-              </li>
-            </ul>
-          </ng-template>
+          <div class="container-popup-other-controls">
+            <button class="btn-controls" (click)="isOpen = !isOpen" type="button">
+              <img src="assets/images/icons/settings.png" alt="settings"/>
+            </button>
+
+            <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpen}">
+              <button class="btn-controls" (click)="snapshot()">
+                <img src="assets/images/icons/snapshot.png" alt="snapshot"/>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </figcaption>
