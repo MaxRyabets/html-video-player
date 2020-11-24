@@ -38,7 +38,14 @@
       <button (click)=fullScreen()>FullScreen</button>
 
       <button #loopSegment>LoopVideoSegment</button>
+
+      <button (click)="snapshot()">Screen</button>
+
+      <button>
+        <img src="assets/images/icons/settings.png">
+      </button>
     </figcaption>
   </figure>
+  <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>
 </section>
 

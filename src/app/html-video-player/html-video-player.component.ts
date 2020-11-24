@@ -29,6 +29,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   @ViewChild('progressBarVideo') progressBarVideo;
   @ViewChild('loopSegment') loopSegment;
   @ViewChild('playPause') playPause;
+  @ViewChild('canvas') canvas;
 
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
@@ -76,6 +77,28 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   changeVolume(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
     this.videoElement.volume = target.value;
+  }
+
+  snapshot(): void {
+    const ctx = this.canvas.nativeElement.getContext('2d');
+
+    this.canvas.nativeElement.width = this.videoOptions.width;
+    this.canvas.nativeElement.height = this.videoOptions.height;
+
+    ctx.fillRect(
+      0,
+      0,
+      this.canvas.nativeElement.width,
+      this.canvas.nativeElement.height
+    );
+
+    ctx.drawImage(
+      this.videoElement,
+      0,
+      0,
+      this.canvas.nativeElement.width,
+      this.canvas.nativeElement.height
+    );
   }
 
   ngAfterViewInit(): void {
