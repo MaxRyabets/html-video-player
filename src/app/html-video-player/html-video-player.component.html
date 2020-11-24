@@ -27,12 +27,15 @@
       <div class="container-buttons-controls">
 
         <div class="play-pause-volume">
-          <button #playPause class="play-pause">
+          <button #playPause class="btn-controls">
             <img *ngIf="!isPlay" src="../../assets/images/icons/play-button.png" alt="play">
             <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
           </button>
 
-          <button (click)=muteVolume()>Mute</button>
+          <button class="btn-controls" (click)=muteVolume()>
+            <img *ngIf="!isMute" src="../../assets/images/icons/volume.png" alt="volume">
+            <img *ngIf="isMute" src="../../assets/images/icons/mute.png" alt="mute">
+          </button>
 
           <input
             type="range"
@@ -74,4 +77,8 @@
   </figure>
   <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>
 </section>
+
+<footer>
+  Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+</footer>
 

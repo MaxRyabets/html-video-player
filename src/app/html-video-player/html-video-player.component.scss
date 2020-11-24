@@ -28,15 +28,16 @@ video {
     display: flex;
     justify-content: space-between;
 
+    .btn-controls {
+      width: 25px;
+      padding-left: unset;
+      border: none;
+      background: none;
+      outline: none;
+    }
+
     .play-pause-volume {
       display: flex;
-
-      .play-pause {
-        padding-left: unset;
-        border: none;
-        background: none;
-        outline: none;
-      }
     }
 
     .other-controls {

@@ -16,6 +16,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
 
   isOpen = false;
   isPlay = false;
+  isMute = false;
 
   destroy$ = new Subject();
 
@@ -58,11 +59,15 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   muteVolume(): void {
     if (this.videoElement.muted && this.progressBarVolumeValue >= 0) {
       this.videoElement.muted = false;
+      this.isMute = this.videoElement.muted;
+      this.progressBarVolumeValue = 1;
 
       return;
     }
 
+    this.progressBarVolumeValue = 0;
     this.videoElement.muted = true;
+    this.isMute = this.videoElement.muted;
   }
 
   fullScreen(): void {
