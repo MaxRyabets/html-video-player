@@ -28,7 +28,7 @@
 
         <div class="play-pause-volume">
           <button #playPause class="btn-controls">
-            <img *ngIf="!isPlay" src="../../assets/images/icons/play-button.png" alt="play">
+            <img *ngIf="!isPlay" src="../../assets/images/icons/play.png" alt="play">
             <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
           </button>
 
@@ -49,16 +49,16 @@
         </div>
 
         <div class="other-controls">
-          <button class="btn-controls" (click)=fullScreen()>
-            <img src="../../assets/images/icons/fullscreen.png" alt="fullscreen">
-          </button>
-
           <button class="btn-controls" #loopSegment>
             <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
           </button>
 
           <button class="btn-controls" (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
             <img src="assets/images/icons/settings.png" alt="settings"/>
+          </button>
+
+          <button class="btn-controls" (click)=fullScreen()>
+            <img src="../../assets/images/icons/fullscreen.png" alt="fullscreen">
           </button>
 
           <ng-template
