@@ -49,11 +49,15 @@
         </div>
 
         <div class="other-controls">
-          <button (click)=fullScreen()>FullScreen</button>
+          <button class="btn-controls" (click)=fullScreen()>
+            <img src="../../assets/images/icons/fullscreen.png" alt="fullscreen">
+          </button>
 
-          <button #loopSegment>LoopVideoSegment</button>
+          <button class="btn-controls" #loopSegment>
+            <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
+          </button>
 
-          <button (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+          <button class="btn-controls" (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
             <img src="assets/images/icons/settings.png" alt="settings"/>
           </button>
 

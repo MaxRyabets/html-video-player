@@ -9,12 +9,6 @@ video {
   }
 }
 
-.controls:fullscreen {
-  display: flex !important;
-  position: fixed !important;
-  z-index: 2147483647 !important;
-}
-
 .controls {
 
   .container-progress-bar-video {
@@ -34,6 +28,7 @@ video {
       border: none;
       background: none;
       outline: none;
+      cursor: pointer;
     }
 
     .play-pause-volume {
@@ -43,12 +38,11 @@ video {
     .other-controls {
       display: flex;
     }
-
-
-
-
   }
+}
 
+input[type="range"] {
+  cursor: pointer;
 }
 
 .setting-list {
