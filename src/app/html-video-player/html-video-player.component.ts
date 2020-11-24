@@ -12,7 +12,7 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   private isDisabledLoopVideoSegment = false;
   private startSegment: number;
   private endSegment: number;
-  private isFullScreen = false;
+  isFullScreen = false;
 
   isOpen = false;
   isPlay = false;

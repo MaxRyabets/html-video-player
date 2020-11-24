@@ -1,15 +1,19 @@
 <section>
-  <figure #containerVideoElement>
+  <figure #containerVideoElement [ngClass]="{containerFullScreen: isFullScreen}">
     <video
       #video
       [width]="videoOptions.width"
       [height]="videoOptions.height"
       [src]="videoOptions.src"
       [muted]="videoOptions.muted"
+      [ngClass]="{videoFullScreen: isFullScreen}"
     >
     </video>
 
-    <figcaption class="controls">
+    <figcaption
+      class="controls"
+      [ngClass]="{controlsFullScreen: isFullScreen}"
+    >
 
       <div class="container-progress-bar-video">
         <input
