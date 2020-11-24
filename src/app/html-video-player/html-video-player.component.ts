@@ -14,6 +14,9 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   private endSegment: number;
   private isFullScreen = false;
 
+  isOpen = false;
+  isPlay = false;
+
   destroy$ = new Subject();
 
   // for local src ../../assets/videos/movie.mp4
@@ -192,12 +195,12 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
 
   private pause(): void {
     this.videoElement.pause();
-    this.playPause.nativeElement.innerHTML = '►';
+    this.isPlay = false;
   }
 
   private play(): void {
     this.videoElement.play();
-    this.playPause.nativeElement.innerHTML = '❙❙';
+    this.isPlay = true;
   }
 
   private isInitStartSegment(segment: number): boolean {

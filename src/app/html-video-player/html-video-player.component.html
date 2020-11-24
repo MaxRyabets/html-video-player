@@ -10,7 +10,10 @@
     </video>
 
     <figcaption class="controls">
-      <button #playPause>►</button>
+      <button #playPause class="play-pause">
+        <img *ngIf="!isPlay" src="../../assets/images/icons/play-button.png" alt="play">
+        <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
+      </button>
 
       <input
         #progressBarVideo
@@ -39,11 +42,22 @@
 
       <button #loopSegment>LoopVideoSegment</button>
 
-      <button (click)="snapshot()">Screen</button>
-
-      <button>
-        <img src="assets/images/icons/settings.png">
+      <button (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+        <img src="assets/images/icons/settings.png" alt="settings"/>
       </button>
+
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="trigger"
+        [cdkConnectedOverlayOpen]="isOpen"
+      >
+        <ul class="setting-list">
+          <li>
+            <button (click)="snapshot()">Screen</button>
+          </li>
+        </ul>
+      </ng-template>
+
     </figcaption>
   </figure>
   <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>

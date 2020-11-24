@@ -20,4 +20,30 @@ video {
     width: 510px;
     border: none;
   }
+
+  .play-pause {
+    border: none;
+    background: none;
+    outline: none;
+  }
+}
+
+.setting-list {
+  width: 100px;
+  border: solid 1px #ccc;
+  border-radius: 5px;
+  background: #fff;
+  text-align: center;
+  padding: 10px;
+  margin: 0;
+}
+
+.setting-list > li {
+  list-style-type: none;
+  border-bottom: solid 1px #8b8b8b;
+  padding: 8px 0;
+}
+
+.setting-list > li:last-child {
+  border-bottom: none;
 }
