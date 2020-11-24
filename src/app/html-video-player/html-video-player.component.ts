@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { VideoOptions } from './video-options.interface';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -8,12 +8,12 @@ import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
   templateUrl: './html-video-player.component.html',
   styleUrls: ['./html-video-player.component.scss'],
 })
-export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
+export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private isDisabledLoopVideoSegment = false;
   private startSegment: number;
   private endSegment: number;
-  isFullScreen = false;
 
+  isFullScreen = false;
   isOpen = false;
   isPlay = false;
   isMute = false;
@@ -37,6 +37,13 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
 
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
+
+  hours = 0;
+  minutes = 0;
+  seconds = 0;
+  duration = '';
+
+  ngOnInit(): void { }
 
   get videoElement(): any {
     return this.video.nativeElement;
@@ -135,6 +142,10 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
       'click'
     ).pipe(
       tap(() => {
+        if (!this.duration.length) {
+          this.calculateDuration();
+        }
+
         if (this.videoElement.paused) {
           this.play();
 
@@ -162,7 +173,6 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
           const currentTimeVideoPlayed = Math.floor(
             (100 / this.videoElement.duration) * this.videoElement.currentTime
           );
-
           this.progressBarVideoValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
         }
@@ -179,6 +189,25 @@ export class HtmlVideoPlayerComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private calculateDuration(): void {
+    const timestamp = this.videoElement.duration;
+    let hours: number | string = Math.floor(timestamp / 60 / 60);
+    const minutes = Math.floor(timestamp / 60) - (hours * 60);
+    const seconds = Math.floor(timestamp % 60);
+
+    this.duration = [
+      minutes.toString().padStart(2, '0'),
+      seconds.toString().padStart(2, '0')
+    ].join(':');
+
+    if (hours === 0) {
+      return;
+    }
+
+    hours = hours.toString().padStart(2, '0') + ':';
+    this.duration = hours + this.duration;
   }
 
   private clickOnProgressBarAfterStartLoopSegment(): Observable<unknown[]> {

@@ -36,6 +36,10 @@
             <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
           </button>
 
+          <div>
+            {{duration}}
+          </div>
+
           <button class="btn-controls" (click)=muteVolume()>
             <img *ngIf="!isMute" src="../../assets/images/icons/volume.png" alt="volume">
             <img *ngIf="isMute" src="../../assets/images/icons/mute.png" alt="mute">
