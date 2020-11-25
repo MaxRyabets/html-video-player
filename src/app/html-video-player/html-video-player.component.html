@@ -15,16 +15,13 @@
       [ngClass]="{controlsFullScreen: isFullScreen}"
     >
       <div class="container-progress-bar-video">
-        <input
+        <progress
           #progressBarVideo
-          type="range"
           class="progress-bar-video"
-          min="0"
-          [max]="video.duration"
-          step="1"
+          max="98"
           [value]="progressBarVideoValue"
           (click)="setProgressVideoValue($event)"
-        />
+        ></progress>
       </div>
 
       <div class="container-buttons-controls">

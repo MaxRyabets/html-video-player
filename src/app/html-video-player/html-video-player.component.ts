@@ -58,9 +58,17 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   setProgressVideoValue(event: MouseEvent): void {
+    if (this.videoElement.currentTime < 0) {
+      return;
+    }
+
+    const percent = event.offsetX / this.videoElement.offsetWidth;
+
+    this.videoElement.currentTime = percent * this.videoElement.duration;
+    this.progressBarVideoValue = Math.floor(percent * 100);
+
     const target = event.target as HTMLTextAreaElement;
-    this.videoElement.currentTime = target.value;
-    this.progressBarVideoValue = +target.value;
+    target.innerHTML = this.progressVideo.value + '% played';
   }
 
   muteVolume(): void {
@@ -161,6 +169,10 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
       'timeupdate'
     ).pipe(
       tap(() => {
+        if (this.videoElement.currentTime < 0) {
+          return;
+        }
+
         if (
           this.isDisabledLoopVideoSegment &&
           this.videoElement.currentTime > this.endSegment

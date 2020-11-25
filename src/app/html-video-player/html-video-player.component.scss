@@ -11,9 +11,27 @@ video {
 
 .controls {
   .container-progress-bar-video {
+    cursor: pointer;
+
     .progress-bar-video {
       width: 100%;
+      margin-bottom: 5px;
       border: none;
+      vertical-align: middle;
+      color: #0075ff;
+    }
+
+    .progress-bar-video[value] {
+      &::-webkit-progress-bar {
+        background-color: #8432ca;
+        border-radius: 2px;
+      }
+    }
+
+    .progress-bar-video[value] {
+      &::-webkit-progress-value {
+        background-color: #0075ff;
+      }
     }
   }
 
