@@ -40,6 +40,10 @@ video {
     .other-controls {
       display: flex;
 
+      .highlightLoopVideoSegment {
+        filter: saturate(13);
+      }
+
       .container-popup-other-controls {
         position: relative;
         top: 0;

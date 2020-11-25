@@ -55,7 +55,7 @@
         </div>
 
         <div class="other-controls">
-          <button class="btn-controls" #loopSegment>
+          <button class="btn-controls" #loopSegment [ngClass]="{highlightLoopVideoSegment: isDisabledLoopVideoSegment}">
             <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
           </button>
 

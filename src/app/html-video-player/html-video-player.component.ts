@@ -9,10 +9,10 @@ import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
   styleUrls: ['./html-video-player.component.scss'],
 })
 export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
-  private isDisabledLoopVideoSegment = false;
   private startSegment: number;
   private endSegment: number;
 
+  isDisabledLoopVideoSegment = false;
   isFullScreen = false;
   isOpen = false;
   isPlay = false;
