@@ -42,6 +42,7 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
   minutes = 0;
   seconds = 0;
   duration = '';
+  currentTime = '';
 
   ngOnInit(): void { }
 
@@ -187,6 +188,24 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
           );
           this.progressBarVideoValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
+
+          let hours: number | string = Math.floor(currentTimeVideoPlayed / 60 / 60);
+          let minutes: number | string = Math.floor(currentTimeVideoPlayed / 60) - (hours * 60);
+          let seconds: number | string = Math.floor(currentTimeVideoPlayed % 60);
+
+          if (seconds < 10) {
+            seconds = seconds.toString().padStart(2, '0');
+          }
+
+          if (minutes < 10) {
+            minutes = minutes.toString().padStart(2, '0');
+          }
+
+          if (hours < 10) {
+            hours = hours.toString().padStart(2, '0');
+          }
+
+          this.currentTime = `${hours !== '00' ? hours + ':' : ''}${minutes}:${seconds}`;
         }
       })
     );
