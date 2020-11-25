@@ -232,8 +232,14 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
       }),
       bufferCount(2),
       tap(() => {
-        if (this.isInitStartSegment(this.startSegment)) {
-          this.endSegment = this.videoElement.currentTime;
+        if (!this.isInitStartSegment(this.startSegment)) {
+          return;
+        }
+
+        this.endSegment = this.videoElement.currentTime;
+
+        if (this.endSegment < this.startSegment) {
+          [this.startSegment, this.endSegment] = [this.endSegment, this.startSegment];
         }
       })
     );
