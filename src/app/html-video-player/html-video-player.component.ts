@@ -1,14 +1,22 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { VideoOptions } from './video-options.interface';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Timestamp } from './timestamp';
 
 @Component({
   selector: 'app-html-video-player',
   templateUrl: './html-video-player.component.html',
   styleUrls: ['./html-video-player.component.scss'],
 })
-export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class HtmlVideoPlayerComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   private startSegment: number;
   private endSegment: number;
 
@@ -44,7 +52,7 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
   duration = '';
   currentTime = '';
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   get videoElement(): any {
     return this.video.nativeElement;
@@ -189,9 +197,8 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
           this.progressBarVideoValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
-          let hours: number | string = Math.floor(currentTimeVideoPlayed / 60 / 60);
-          let minutes: number | string = Math.floor(currentTimeVideoPlayed / 60) - (hours * 60);
-          let seconds: number | string = Math.floor(currentTimeVideoPlayed % 60);
+          const timeVideoPlayed = this.calculateTime(currentTimeVideoPlayed);
+          let { hours, minutes, seconds } = timeVideoPlayed;
 
           if (seconds < 10) {
             seconds = seconds.toString().padStart(2, '0');
@@ -205,7 +212,9 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
             hours = hours.toString().padStart(2, '0');
           }
 
-          this.currentTime = `${hours !== '00' ? hours + ':' : ''}${minutes}:${seconds}`;
+          this.currentTime = `${
+            hours !== '00' ? hours + ':' : ''
+          }${minutes}:${seconds}`;
         }
       })
     );
@@ -222,15 +231,27 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
     this.destroy$.complete();
   }
 
-  private calculateDuration(): void {
-    const timestamp = this.videoElement.duration;
-    let hours: number | string = Math.floor(timestamp / 60 / 60);
-    const minutes = Math.floor(timestamp / 60) - (hours * 60);
+  private calculateTime(timestamp): Timestamp {
+    const hours = Math.floor(timestamp / 60 / 60);
+    const minutes = Math.floor(timestamp / 60) - hours * 60;
     const seconds = Math.floor(timestamp % 60);
 
+    return {
+      hours,
+      minutes,
+      seconds,
+    };
+  }
+
+  private calculateDuration(): void {
+    const timestamp = this.videoElement.duration;
+
+    const timeVideoPlayed = this.calculateTime(timestamp);
+    let hours = timeVideoPlayed.hours;
+
     this.duration = [
-      minutes.toString().padStart(2, '0'),
-      seconds.toString().padStart(2, '0')
+      timeVideoPlayed.minutes.toString().padStart(2, '0'),
+      timeVideoPlayed.seconds.toString().padStart(2, '0'),
     ].join(':');
 
     if (hours === 0) {
@@ -258,7 +279,10 @@ export class HtmlVideoPlayerComponent implements OnInit, AfterViewInit, OnDestro
         this.endSegment = this.videoElement.currentTime;
 
         if (this.endSegment < this.startSegment) {
-          [this.startSegment, this.endSegment] = [this.endSegment, this.startSegment];
+          [this.startSegment, this.endSegment] = [
+            this.endSegment,
+            this.startSegment,
+          ];
         }
       })
     );
