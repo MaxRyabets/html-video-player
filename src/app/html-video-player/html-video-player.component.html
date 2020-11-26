@@ -25,14 +25,16 @@
       </div>
 
       <div class="container-buttons-controls">
-        <div class="play-pause-volume">
+        <div class="control-play-pause-volume">
           <button #playPause class="btn-controls">
             <img *ngIf="!isPlay" src="../../assets/images/icons/play.png" alt="play">
             <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
           </button>
 
-          <div>
-            {{currentTime}} / {{duration}}
+          <div class="control-time">
+            <ng-container *ngIf="isPlay">
+              {{currentTime}} / {{duration}}
+            </ng-container>
           </div>
 
           <button class="btn-controls" (click)=muteVolume()>

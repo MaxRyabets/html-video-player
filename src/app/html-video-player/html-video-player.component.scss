@@ -50,9 +50,15 @@ video {
       cursor: pointer;
     }
 
-    .play-pause-volume {
+    .control-play-pause-volume {
       display: flex;
       align-items: center;
+    }
+
+    .control-time {
+      width: 100px;
+      font-size: 14px;
+      color: #0075ff;
     }
 
     .other-controls {
