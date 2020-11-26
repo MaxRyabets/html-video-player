@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
-import { bufferCount, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { bufferCount, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Timestamp } from './timestamp';
 
 @Component({
@@ -26,6 +26,8 @@ export class HtmlVideoPlayerComponent
   isPlay = false;
   isMute = false;
 
+  zoom = 1;
+
   destroy$ = new Subject();
 
   // for local src ../../assets/videos/movie.mp4
@@ -41,7 +43,9 @@ export class HtmlVideoPlayerComponent
   @ViewChild('progressBarVideo') progressBarVideo;
   @ViewChild('loopSegment') loopSegment;
   @ViewChild('playPause') playPause;
+  @ViewChild('bufferedAmount') bufferedAmount;
   @ViewChild('canvas') canvas;
+  @ViewChild('videoControls') videoControls;
 
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
@@ -64,6 +68,10 @@ export class HtmlVideoPlayerComponent
 
   get containerVideo(): any {
     return this.containerVideoElement.nativeElement;
+  }
+
+  get controls(): any {
+    return this.videoControls.nativeElement;
   }
 
   setProgressVideoValue(event: MouseEvent): void {
@@ -131,6 +139,30 @@ export class HtmlVideoPlayerComponent
       this.canvas.nativeElement.width,
       this.canvas.nativeElement.height
     );
+  }
+
+  zoomIn(): void {
+    if (this.zoom > 2) {
+      return;
+    }
+    this.zoom += 0.1;
+
+    // number of increase pixels
+    const pixel = 20;
+
+    this.changeMarginTopAfterZoom(pixel);
+  }
+
+  zoomOut(): void {
+    if (this.zoom === 1) {
+      return;
+    }
+    this.zoom -= 0.1;
+
+    // number of degrease pixels
+    const pixel = -20;
+
+    this.changeMarginTopAfterZoom(pixel);
   }
 
   ngAfterViewInit(): void {
@@ -304,5 +336,16 @@ export class HtmlVideoPlayerComponent
       !isNaN(segment) &&
       this.endSegment === undefined
     );
+  }
+
+  private changeMarginTopAfterZoom(pixel: number): void {
+    this.videoElement.style.transform = `scale(${this.zoom})`;
+
+    const marginTopControls =
+      (+this.controls.style.marginTop.replace('px', '') + pixel).toString() +
+      'px';
+
+    this.controls.style.marginTop = marginTopControls;
+    this.videoElement.style.marginTop = marginTopControls;
   }
 }

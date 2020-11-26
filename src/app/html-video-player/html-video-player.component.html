@@ -10,10 +10,14 @@
     >
     </video>
 
+    <!-- start video controls -->
     <figcaption
+      #videoControls
       class="controls"
       [ngClass]="{controlsFullScreen: isFullScreen}"
     >
+
+      <!-- start progress bar -->
       <div class="container-progress-bar-video">
         <progress
           #progressBarVideo
@@ -23,7 +27,9 @@
           (click)="setProgressVideoValue($event)"
         ></progress>
       </div>
+      <!-- end progress bar -->
 
+      <!-- start button controls -->
       <div class="container-buttons-controls">
         <div class="control-play-pause-volume">
           <button #playPause class="btn-controls">
@@ -53,6 +59,7 @@
           />
         </div>
 
+        <!-- start other-controls -->
         <div class="other-controls">
           <button class="btn-controls" #loopSegment [ngClass]="{highlightLoopVideoSegment: isDisabledLoopVideoSegment}">
             <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
@@ -68,14 +75,36 @@
             </button>
 
             <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpen}">
-              <button class="btn-controls" (click)="snapshot()">
+              <button class="btn-popup-controls" (click)="snapshot()">
                 <img src="assets/images/icons/snapshot.png" alt="snapshot"/>
               </button>
+
+              <!-- start two buttons in container-zoom -->
+              <div class="container-zoom">
+                <button class="btn-popup-controls btn-bottom-border btn-increase-zoom" (click)="zoomIn()">
+                  +
+                </button>
+                <button class="btn-popup-controls btn-bottom-border" (click)="zoomOut()">
+                  -
+                </button>
+              </div>
+              <!-- end two buttons in container-zoom -->
+
             </div>
           </div>
         </div>
+        <!-- end other-controls -->
+
       </div>
+      <!-- end button controls -->
+
     </figcaption>
+    <!-- end video controls -->
+
   </figure>
+
+  <!-- start output snapshot -->
   <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>
+  <!-- end output snapshot -->
+
 </section>
