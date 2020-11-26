@@ -75,7 +75,7 @@
             </button>
 
             <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpen}">
-              <button class="btn-popup-controls" (click)="snapshot()">
+              <button class="btn-popup-controls btn-snapshot" (click)="snapshot()">
                 <img src="assets/images/icons/snapshot.png" alt="snapshot"/>
               </button>
 
@@ -84,8 +84,8 @@
                 <button class="btn-popup-controls btn-bottom-border btn-increase-zoom" (click)="zoomIn()">
                   +
                 </button>
-                <button class="btn-popup-controls btn-bottom-border" (click)="zoomOut()">
-                  -
+                <button class="btn-popup-controls btn-bottom-border btn-decrease-zoom" (click)="zoomOut()">
+                  &#8722;
                 </button>
               </div>
               <!-- end two buttons in container-zoom -->

@@ -95,10 +95,19 @@ video {
             justify-content: center;
             align-items: center;
             width: 100%;
+            font-size: 16px;
           }
 
           .btn-increase-zoom {
             border-right: 1px solid black;
+          }
+
+          .btn-decrease-zoom,
+          .btn-increase-zoom,
+          .btn-snapshot {
+            &:hover {
+              background: #a5e0e9;
+            }
           }
         }
 
