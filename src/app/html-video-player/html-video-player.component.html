@@ -70,11 +70,11 @@
           </button>
 
           <div class="container-popup-other-controls">
-            <button class="btn-controls" (click)="isOpen = !isOpen" type="button">
-              <img src="assets/images/icons/settings.png" alt="settings"/>
+            <button class="btn-controls" (click)="isOpenPopupOtherControls = !isOpenPopupOtherControls" type="button">
+              <img class="active-popup-other-controls" src="assets/images/icons/settings.png" alt="settings"/>
             </button>
 
-            <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpen}">
+            <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpenPopupOtherControls}">
               <button class="btn-popup-controls btn-snapshot" (click)="snapshot()">
                 <img src="assets/images/icons/snapshot.png" alt="snapshot"/>
               </button>

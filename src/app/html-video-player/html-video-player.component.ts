@@ -7,7 +7,15 @@ import {
 } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
-import { bufferCount, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import {
+  bufferCount,
+  debounceTime,
+  delay,
+  filter,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs/operators';
 import { Timestamp } from './timestamp';
 
 @Component({
@@ -22,7 +30,7 @@ export class HtmlVideoPlayerComponent
 
   isDisabledLoopVideoSegment = false;
   isFullScreen = false;
-  isOpen = false;
+  isOpenPopupOtherControls = false;
   isPlay = false;
   isMute = false;
 
@@ -166,6 +174,26 @@ export class HtmlVideoPlayerComponent
   }
 
   ngAfterViewInit(): void {
+    const clickOnPopupOtherControls$ = fromEvent(document, 'click').pipe(
+      filter(() => this.isOpenPopupOtherControls),
+      tap((e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const popupOtherControls = document.querySelector(
+          '.popupOtherControls'
+        );
+        const activePopupOtherControls = document.querySelector(
+          '.active-popup-other-controls'
+        );
+
+        if (
+          !activePopupOtherControls.contains(target) &&
+          !popupOtherControls.contains(target)
+        ) {
+          this.isOpenPopupOtherControls = false;
+        }
+      })
+    );
+
     const clickOnLoopSegment$ = fromEvent(
       this.loopSegment.nativeElement,
       'click'
@@ -252,6 +280,7 @@ export class HtmlVideoPlayerComponent
     );
 
     merge(
+      clickOnPopupOtherControls$,
       clickOnLoopSegment$,
       clickOnPlayPause$,
       timeUpdateProgressBar$
