@@ -3,4 +3,5 @@ export interface VideoOptions {
   height: number;
   src: string;
   muted: string;
+  poster?: string;
 }

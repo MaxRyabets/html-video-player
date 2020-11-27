@@ -7,7 +7,8 @@ export const playList: PlayList[] = [
     videoOptions: {
       width: 200,
       height: 100,
-      src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
+      src: '../../assets/videos/dracula.mp4',
+      poster: '../../assets/images/posters/dracula.png',
       muted: 'muted',
     },
   },
@@ -17,7 +18,8 @@ export const playList: PlayList[] = [
     videoOptions: {
       width: 200,
       height: 100,
-      src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
+      src: '../../assets/videos/tom.mp4',
+      poster: '../../assets/images/posters/tom.png',
       muted: 'muted',
     },
   },
@@ -27,7 +29,8 @@ export const playList: PlayList[] = [
     videoOptions: {
       width: 200,
       height: 100,
-      src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
+      src: '../../assets/videos/dracula.mp4',
+      poster: '../../assets/images/posters/dracula.png',
       muted: 'muted',
     },
   },
@@ -37,7 +40,8 @@ export const playList: PlayList[] = [
     videoOptions: {
       width: 200,
       height: 100,
-      src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
+      src: '../../assets/videos/dracula.mp4',
+      poster: '../../assets/images/posters/dracula.png',
       muted: 'muted',
     },
   },
@@ -47,7 +51,8 @@ export const playList: PlayList[] = [
     videoOptions: {
       width: 200,
       height: 100,
-      src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
+      src: '../../assets/videos/tom.mp4',
+      poster: '../../assets/images/posters/tom.png',
       muted: 'muted',
     },
   },
