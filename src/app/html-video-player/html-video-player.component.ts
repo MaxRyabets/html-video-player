@@ -406,32 +406,27 @@ export class HtmlVideoPlayerComponent
     return fromEvent(this.videoElement, 'timeupdate').pipe(
       takeUntil(this.destroy$),
       tap((e: Timestamp) => {
-        if (this.videoElement.currentTime < 0) {
-          return;
-        }
-
-        if (
-          this.isDisabledLoopVideoSegment &&
-          this.videoElement.currentTime > this.endSegment
-        ) {
+        if (this.isClickLoopSegment()) {
           this.videoElement.currentTime = this.startSegment;
         }
 
-        if (!this.videoElement.paused) {
-          // Work out how much of the media has played via the duration and currentTime parameters
-          const currentTimeVideoPlayed = Math.floor(
-            (100 / this.videoElement.duration) * this.videoElement.currentTime
-          );
-
-          if (isNaN(currentTimeVideoPlayed)) {
-            return;
-          }
-
-          this.progressBarVideoValue = currentTimeVideoPlayed;
-          this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
-
-          this.updateTimeVideo(currentTimeVideoPlayed);
+        if (this.videoElement.paused) {
+          return;
         }
+
+        // Work out how much of the media has played via the duration and currentTime parameters
+        const currentTimeVideoPlayed = Math.floor(
+          (100 / this.videoElement.duration) * this.videoElement.currentTime
+        );
+
+        if (isNaN(currentTimeVideoPlayed)) {
+          return;
+        }
+
+        this.progressBarVideoValue = currentTimeVideoPlayed;
+        this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
+
+        this.updateTimeVideo(currentTimeVideoPlayed);
       })
     );
   }
@@ -448,6 +443,13 @@ export class HtmlVideoPlayerComponent
 
         this.play();
       })
+    );
+  }
+
+  private isClickLoopSegment(): boolean {
+    return (
+      this.isDisabledLoopVideoSegment &&
+      this.videoElement.currentTime > this.endSegment
     );
   }
 }
