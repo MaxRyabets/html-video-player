@@ -176,148 +176,25 @@ export class HtmlVideoPlayerComponent
   }
 
   ngAfterViewInit(): void {
-    const clickOnPopupOtherControls$ = fromEvent(document, 'click').pipe(
-      takeUntil(this.destroy$),
-      filter(() => this.isOpenPopupOtherControls),
-      tap((e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const popupOtherControls = document.querySelector(
-          '.popupOtherControls'
-        );
-        const activePopupOtherControls = document.querySelector(
-          '.active-popup-other-controls'
-        );
+    const popupOtherControls$ = this.clickOnPopupOtherControls();
 
-        if (
-          !activePopupOtherControls.contains(target) &&
-          !popupOtherControls.contains(target)
-        ) {
-          this.isOpenPopupOtherControls = false;
-        }
-      })
-    );
+    const loopSegment$ = this.clickOnLoopSegment();
 
-    const clickOnLoopSegment$ = fromEvent(
-      this.loopSegment.nativeElement,
-      'click'
-    ).pipe(
-      takeUntil(this.destroy$),
-      tap(() => {
-        if (this.isDisabledLoopVideoSegment) {
-          this.isDisabledLoopVideoSegment = false;
+    const playPause$ = this.clickOnPlayPause$();
 
-          this.startSegment = undefined;
-          this.endSegment = undefined;
+    const progressBarIfVideoOnPause$ = this.clickOnProgressBarIfVideoOnPause();
 
-          return;
-        }
+    const updateProgressBar$ = this.timeUpdateProgressBar();
 
-        this.isDisabledLoopVideoSegment = true;
-        this.pause();
-      }),
-      switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
-    );
-
-    const clickOnPlayPause$ = fromEvent(
-      this.playPause.nativeElement,
-      'click'
-    ).pipe(
-      takeUntil(this.destroy$),
-      tap(() => {
-        if (!this.duration.length) {
-          this.calculateDuration();
-        }
-
-        if (this.videoElement.paused) {
-          this.play();
-
-          return;
-        }
-
-        this.pause();
-      })
-    );
-
-    const clickOnProgressBarIfVideoOnPause$ = fromEvent(
-      this.progressVideo,
-      'click'
-    ).pipe(
-      takeUntil(this.destroy$),
-      tap((event: MouseEvent) => {
-        if (!this.duration.length) {
-          this.calculateDuration();
-        }
-
-        const percent = event.offsetX / this.videoElement.offsetWidth;
-
-        this.videoElement.currentTime = percent * this.videoElement.duration;
-        this.progressBarVideoValue = Math.floor(percent * 100);
-
-        this.updateTimeVideo(this.progressBarVideoValue);
-
-        const target = event.target as HTMLTextAreaElement;
-        target.innerHTML = this.progressVideo.value + '% played';
-      })
-    );
-
-    const timeUpdateProgressBar$ = fromEvent(
-      this.videoElement,
-      'timeupdate'
-    ).pipe(
-      takeUntil(this.destroy$),
-      tap(() => {
-        if (this.videoElement.currentTime < 0) {
-          return;
-        }
-
-        if (
-          this.isDisabledLoopVideoSegment &&
-          this.videoElement.currentTime > this.endSegment
-        ) {
-          this.videoElement.currentTime = this.startSegment;
-        }
-
-        if (!this.videoElement.paused) {
-          // Work out how much of the media has played via the duration and currentTime parameters
-          const currentTimeVideoPlayed = Math.floor(
-            (100 / this.videoElement.duration) * this.videoElement.currentTime
-          );
-
-          if (isNaN(currentTimeVideoPlayed)) {
-            return;
-          }
-
-          this.progressBarVideoValue = currentTimeVideoPlayed;
-          this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
-
-          this.updateTimeVideo(currentTimeVideoPlayed);
-        }
-      })
-    );
-
-    const clickOnVideoPlayList$ = fromEvent(
-      this.videoPlayList.nativeElement,
-      'click'
-    ).pipe(
-      takeUntil(this.destroy$),
-      tap(() => {
-        this.pause();
-
-        this.videoElement.currentTime = 0;
-        this.progressVideo.innerHTML = '0% played';
-        this.progressBarVideoValue = this.progressVideo.value = 0;
-
-        this.play();
-      })
-    );
+    const replaceVideoFromPlayList$ = this.clickOnVideoPlayList();
 
     merge(
-      clickOnPopupOtherControls$,
-      clickOnLoopSegment$,
-      clickOnPlayPause$,
-      clickOnProgressBarIfVideoOnPause$,
-      timeUpdateProgressBar$,
-      clickOnVideoPlayList$
+      popupOtherControls$,
+      loopSegment$,
+      playPause$,
+      progressBarIfVideoOnPause$,
+      updateProgressBar$,
+      replaceVideoFromPlayList$
     ).subscribe();
   }
 
@@ -387,7 +264,7 @@ export class HtmlVideoPlayerComponent
     this.calculateCurrentTime(timeVideoPlayed);
   }
 
-  private clickOnProgressBarAfterStartLoopSegment(): Observable<unknown[]> {
+  private clickOnProgressBarAfterStartLoopSegment(): Observable<MouseEvent> {
     return fromEvent(this.progressVideo, 'click').pipe(
       takeUntil(this.destroy$),
       tap(() => {
@@ -396,7 +273,7 @@ export class HtmlVideoPlayerComponent
         }
       }),
       bufferCount(2),
-      tap(() => {
+      tap((e: any) => {
         if (!this.isInitStartSegment(this.startSegment)) {
           return;
         }
@@ -440,5 +317,137 @@ export class HtmlVideoPlayerComponent
 
     this.controls.style.marginTop = marginTopControls;
     this.videoElement.style.marginTop = marginTopControls;
+  }
+
+  private clickOnPopupOtherControls(): Observable<MouseEvent> {
+    return fromEvent(document, 'click').pipe(
+      takeUntil(this.destroy$),
+      filter(() => this.isOpenPopupOtherControls),
+      tap((e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const popupOtherControls = document.querySelector(
+          '.popupOtherControls'
+        );
+        const activePopupOtherControls = document.querySelector(
+          '.active-popup-other-controls'
+        );
+
+        if (
+          !activePopupOtherControls.contains(target) &&
+          !popupOtherControls.contains(target)
+        ) {
+          this.isOpenPopupOtherControls = false;
+        }
+      })
+    );
+  }
+
+  private clickOnLoopSegment(): Observable<MouseEvent> {
+    return fromEvent(this.loopSegment.nativeElement, 'click').pipe(
+      takeUntil(this.destroy$),
+      tap(() => {
+        if (this.isDisabledLoopVideoSegment) {
+          this.isDisabledLoopVideoSegment = false;
+
+          this.startSegment = undefined;
+          this.endSegment = undefined;
+
+          return;
+        }
+
+        this.isDisabledLoopVideoSegment = true;
+        this.pause();
+      }),
+      switchMap(() => this.clickOnProgressBarAfterStartLoopSegment())
+    );
+  }
+
+  private clickOnPlayPause$(): Observable<MouseEvent> {
+    return fromEvent(this.playPause.nativeElement, 'click').pipe(
+      takeUntil(this.destroy$),
+      tap((e: MouseEvent) => {
+        if (!this.duration.length) {
+          this.calculateDuration();
+        }
+
+        if (this.videoElement.paused) {
+          this.play();
+
+          return;
+        }
+
+        this.pause();
+      })
+    );
+  }
+
+  private clickOnProgressBarIfVideoOnPause(): Observable<MouseEvent> {
+    return fromEvent(this.progressVideo, 'click').pipe(
+      takeUntil(this.destroy$),
+      tap((event: MouseEvent) => {
+        if (!this.duration.length) {
+          this.calculateDuration();
+        }
+
+        const percent = event.offsetX / this.videoElement.offsetWidth;
+
+        this.videoElement.currentTime = percent * this.videoElement.duration;
+        this.progressBarVideoValue = Math.floor(percent * 100);
+
+        this.updateTimeVideo(this.progressBarVideoValue);
+
+        const target = event.target as HTMLTextAreaElement;
+        target.innerHTML = this.progressVideo.value + '% played';
+      })
+    );
+  }
+
+  private timeUpdateProgressBar(): Observable<Timestamp> {
+    return fromEvent(this.videoElement, 'timeupdate').pipe(
+      takeUntil(this.destroy$),
+      tap((e: Timestamp) => {
+        if (this.videoElement.currentTime < 0) {
+          return;
+        }
+
+        if (
+          this.isDisabledLoopVideoSegment &&
+          this.videoElement.currentTime > this.endSegment
+        ) {
+          this.videoElement.currentTime = this.startSegment;
+        }
+
+        if (!this.videoElement.paused) {
+          // Work out how much of the media has played via the duration and currentTime parameters
+          const currentTimeVideoPlayed = Math.floor(
+            (100 / this.videoElement.duration) * this.videoElement.currentTime
+          );
+
+          if (isNaN(currentTimeVideoPlayed)) {
+            return;
+          }
+
+          this.progressBarVideoValue = currentTimeVideoPlayed;
+          this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
+
+          this.updateTimeVideo(currentTimeVideoPlayed);
+        }
+      })
+    );
+  }
+
+  private clickOnVideoPlayList(): Observable<MouseEvent> {
+    return fromEvent(this.videoPlayList.nativeElement, 'click').pipe(
+      takeUntil(this.destroy$),
+      tap((e: MouseEvent) => {
+        this.pause();
+
+        this.videoElement.currentTime = 0;
+        this.progressVideo.innerHTML = '0% played';
+        this.progressBarVideoValue = this.progressVideo.value = 0;
+
+        this.play();
+      })
+    );
   }
 }
