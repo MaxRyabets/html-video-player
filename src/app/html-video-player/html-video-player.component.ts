@@ -83,10 +83,16 @@ export class HtmlVideoPlayerComponent
       return;
     }
 
+    if (!this.duration.length) {
+      this.calculateDuration();
+    }
+
     const percent = event.offsetX / this.videoElement.offsetWidth;
 
     this.videoElement.currentTime = percent * this.videoElement.duration;
     this.progressBarVideoValue = Math.floor(percent * 100);
+
+    this.updateTimeVideo(this.progressBarVideoValue);
 
     const target = event.target as HTMLTextAreaElement;
     target.innerHTML = this.progressVideo.value + '% played';
@@ -258,24 +264,7 @@ export class HtmlVideoPlayerComponent
           this.progressBarVideoValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
-          const timeVideoPlayed = this.calculateTime(currentTimeVideoPlayed);
-          let { hours, minutes, seconds } = timeVideoPlayed;
-
-          if (seconds < 10) {
-            seconds = seconds.toString().padStart(2, '0');
-          }
-
-          if (minutes < 10) {
-            minutes = minutes.toString().padStart(2, '0');
-          }
-
-          if (hours < 10) {
-            hours = hours.toString().padStart(2, '0');
-          }
-
-          this.currentTime = `${
-            hours !== '00' ? hours + ':' : ''
-          }${minutes}:${seconds}`;
+          this.updateTimeVideo(currentTimeVideoPlayed);
         }
       })
     );
@@ -289,7 +278,7 @@ export class HtmlVideoPlayerComponent
 
         this.videoElement.currentTime = 0;
         this.progressVideo.innerHTML = '0% played';
-        this.progressVideo.value = this.progressBarVideoValue = 0;
+        this.progressBarVideoValue = this.progressVideo.value = 0;
 
         this.play();
       })
@@ -304,7 +293,7 @@ export class HtmlVideoPlayerComponent
     ).subscribe();
   }
 
-  emitVideo(video: PlayList): void {
+  changePropertiesVideo(video: PlayList): void {
     this.videoOptions.src = video.videoOptions.src;
     this.videoOptions.poster = video.videoOptions.poster;
   }
@@ -343,6 +332,31 @@ export class HtmlVideoPlayerComponent
 
     hours = hours.toString().padStart(2, '0') + ':';
     this.duration = hours + this.duration;
+  }
+
+  private calculateCurrentTime(timeVideoPlayed: Timestamp): void {
+    let { hours, minutes, seconds } = timeVideoPlayed;
+
+    if (seconds < 10) {
+      seconds = seconds.toString().padStart(2, '0');
+    }
+
+    if (minutes < 10) {
+      minutes = minutes.toString().padStart(2, '0');
+    }
+
+    if (hours < 10) {
+      hours = hours.toString().padStart(2, '0');
+    }
+
+    this.currentTime = `${
+      hours !== '00' ? hours + ':' : ''
+    }${minutes}:${seconds}`;
+  }
+
+  private updateTimeVideo(currentTimeVideoPlayed: number): void {
+    const timeVideoPlayed = this.calculateTime(currentTimeVideoPlayed);
+    this.calculateCurrentTime(timeVideoPlayed);
   }
 
   private clickOnProgressBarAfterStartLoopSegment(): Observable<unknown[]> {
