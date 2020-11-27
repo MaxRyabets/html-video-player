@@ -177,6 +177,7 @@ export class HtmlVideoPlayerComponent
 
   ngAfterViewInit(): void {
     const clickOnPopupOtherControls$ = fromEvent(document, 'click').pipe(
+      takeUntil(this.destroy$),
       filter(() => this.isOpenPopupOtherControls),
       tap((e: MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -200,6 +201,7 @@ export class HtmlVideoPlayerComponent
       this.loopSegment.nativeElement,
       'click'
     ).pipe(
+      takeUntil(this.destroy$),
       tap(() => {
         if (this.isDisabledLoopVideoSegment) {
           this.isDisabledLoopVideoSegment = false;
@@ -220,6 +222,7 @@ export class HtmlVideoPlayerComponent
       this.playPause.nativeElement,
       'click'
     ).pipe(
+      takeUntil(this.destroy$),
       tap(() => {
         if (!this.duration.length) {
           this.calculateDuration();
@@ -239,6 +242,7 @@ export class HtmlVideoPlayerComponent
       this.progressVideo,
       'click'
     ).pipe(
+      takeUntil(this.destroy$),
       tap((event: MouseEvent) => {
         if (!this.duration.length) {
           this.calculateDuration();
@@ -260,6 +264,7 @@ export class HtmlVideoPlayerComponent
       this.videoElement,
       'timeupdate'
     ).pipe(
+      takeUntil(this.destroy$),
       tap(() => {
         if (this.videoElement.currentTime < 0) {
           return;
@@ -294,6 +299,7 @@ export class HtmlVideoPlayerComponent
       this.videoPlayList.nativeElement,
       'click'
     ).pipe(
+      takeUntil(this.destroy$),
       tap(() => {
         this.pause();
 
