@@ -4,5 +4,5 @@ export interface PlayList {
   id: number;
   title: string;
   duration?: string;
-  videoOptions?: VideoOptions;
+  videoOptions: VideoOptions;
 }

@@ -1,110 +1,116 @@
-<section>
-  <figure #containerVideoElement [ngClass]="{containerFullScreen: isFullScreen}">
-    <video
-      #video
-      [width]="videoOptions.width"
-      [height]="videoOptions.height"
-      [src]="videoOptions.src"
-      [muted]="videoOptions.muted"
-      [ngClass]="{videoFullScreen: isFullScreen}"
-    >
-    </video>
+<section class="wrapper-video">
+  <section class="left-video-container">
+    <figure #containerVideoElement [ngClass]="{containerFullScreen: isFullScreen}">
+      <video
+        #video
+        [width]="videoOptions.width"
+        [height]="videoOptions.height"
+        [src]="videoOptions.src"
+        [muted]="videoOptions.muted"
+        [ngClass]="{videoFullScreen: isFullScreen}"
+      >
+      </video>
 
-    <!-- start video controls -->
-    <figcaption
-      #videoControls
-      class="controls"
-      [ngClass]="{controlsFullScreen: isFullScreen}"
-    >
+      <!-- start video controls -->
+      <figcaption
+        #videoControls
+        class="controls"
+        [ngClass]="{controlsFullScreen: isFullScreen}"
+      >
 
-      <!-- start progress bar -->
-      <div class="container-progress-bar-video">
-        <progress
-          #progressBarVideo
-          class="progress-bar-video"
-          max="98"
-          [value]="progressBarVideoValue"
-          (click)="setProgressVideoValue($event)"
-        ></progress>
-      </div>
-      <!-- end progress bar -->
-
-      <!-- start button controls -->
-      <div class="container-buttons-controls">
-        <div class="control-play-pause-volume">
-          <button #playPause class="btn-controls">
-            <img *ngIf="!isPlay" src="../../assets/images/icons/play.png" alt="play">
-            <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
-          </button>
-
-          <div class="control-time">
-            <ng-container *ngIf="duration.length">
-              {{currentTime}} / {{duration}}
-            </ng-container>
-          </div>
-
-          <button class="btn-controls" (click)=muteVolume()>
-            <img *ngIf="!isMute" src="../../assets/images/icons/volume.png" alt="volume">
-            <img *ngIf="isMute" src="../../assets/images/icons/mute.png" alt="mute">
-          </button>
-
-          <input
-            type="range"
-            class="progressBarVolume"
-            min="0"
-            max="1"
-            step="0.1"
-            [value]="progressBarVolumeValue"
-            (change)="changeVolume($event)"
-          />
+        <!-- start progress bar -->
+        <div class="container-progress-bar-video">
+          <progress
+            #progressBarVideo
+            class="progress-bar-video"
+            max="98"
+            [value]="progressBarVideoValue"
+            (click)="setProgressVideoValue($event)"
+          ></progress>
         </div>
+        <!-- end progress bar -->
 
-        <!-- start other-controls -->
-        <div class="other-controls">
-          <button class="btn-controls" #loopSegment [ngClass]="{highlightLoopVideoSegment: isDisabledLoopVideoSegment}">
-            <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
-          </button>
-
-          <button class="btn-controls" (click)=fullScreen()>
-            <img src="../../assets/images/icons/fullscreen.png" alt="fullscreen">
-          </button>
-
-          <div class="container-popup-other-controls">
-            <button class="btn-controls" (click)="isOpenPopupOtherControls = !isOpenPopupOtherControls" type="button">
-              <img class="active-popup-other-controls" src="assets/images/icons/settings.png" alt="settings"/>
+        <!-- start button controls -->
+        <div class="container-buttons-controls">
+          <div class="control-play-pause-volume">
+            <button #playPause class="btn-controls">
+              <img *ngIf="!isPlay" src="../../assets/images/icons/play.png" alt="play">
+              <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
             </button>
 
-            <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpenPopupOtherControls}">
-              <button class="btn-popup-controls btn-snapshot" (click)="snapshot()">
-                <img src="assets/images/icons/snapshot.png" alt="snapshot"/>
+            <div class="control-time">
+              <ng-container *ngIf="duration.length">
+                {{currentTime}} / {{duration}}
+              </ng-container>
+            </div>
+
+            <button class="btn-controls" (click)=muteVolume()>
+              <img *ngIf="!isMute" src="../../assets/images/icons/volume.png" alt="volume">
+              <img *ngIf="isMute" src="../../assets/images/icons/mute.png" alt="mute">
+            </button>
+
+            <input
+              type="range"
+              class="progressBarVolume"
+              min="0"
+              max="1"
+              step="0.1"
+              [value]="progressBarVolumeValue"
+              (change)="changeVolume($event)"
+            />
+          </div>
+
+          <!-- start other-controls -->
+          <div class="other-controls">
+            <button class="btn-controls" #loopSegment [ngClass]="{highlightLoopVideoSegment: isDisabledLoopVideoSegment}">
+              <img src="../../assets/images/icons/loop-video-segments.png" alt="loop-video-segments">
+            </button>
+
+            <button class="btn-controls" (click)=fullScreen()>
+              <img src="../../assets/images/icons/fullscreen.png" alt="fullscreen">
+            </button>
+
+            <div class="container-popup-other-controls">
+              <button class="btn-controls" (click)="isOpenPopupOtherControls = !isOpenPopupOtherControls" type="button">
+                <img class="active-popup-other-controls" src="assets/images/icons/settings.png" alt="settings"/>
               </button>
 
-              <!-- start two buttons in container-zoom -->
-              <div class="container-zoom">
-                <button class="btn-popup-controls btn-bottom-border btn-increase-zoom" (click)="zoomIn()">
-                  +
+              <div class="other-controls-hidden" [ngClass]="{popupOtherControls: isOpenPopupOtherControls}">
+                <button class="btn-popup-controls btn-snapshot" (click)="snapshot()">
+                  <img src="assets/images/icons/snapshot.png" alt="snapshot"/>
                 </button>
-                <button class="btn-popup-controls btn-bottom-border btn-decrease-zoom" (click)="zoomOut()">
-                  &#8722;
-                </button>
-              </div>
-              <!-- end two buttons in container-zoom -->
 
+                <!-- start two buttons in container-zoom -->
+                <div class="container-zoom">
+                  <button class="btn-popup-controls btn-bottom-border btn-increase-zoom" (click)="zoomIn()">
+                    +
+                  </button>
+                  <button class="btn-popup-controls btn-bottom-border btn-decrease-zoom" (click)="zoomOut()">
+                    &#8722;
+                  </button>
+                </div>
+                <!-- end two buttons in container-zoom -->
+
+              </div>
             </div>
           </div>
+          <!-- end other-controls -->
+
         </div>
-        <!-- end other-controls -->
+        <!-- end button controls -->
 
-      </div>
-      <!-- end button controls -->
+      </figcaption>
+      <!-- end video controls -->
 
-    </figcaption>
-    <!-- end video controls -->
+    </figure>
 
-  </figure>
-
-  <!-- start output snapshot -->
-  <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>
-  <!-- end output snapshot -->
-
+    <!-- start output snapshot -->
+    <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>
+    <!-- end output snapshot -->
+  </section>
+  <section class="right-video-container">
+    <article>
+      <app-video-play-list></app-video-play-list>
+    </article>
+  </section>
 </section>
