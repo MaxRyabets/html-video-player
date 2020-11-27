@@ -38,26 +38,29 @@
               <img *ngIf="isPlay" src="../../assets/images/icons/pause.png" alt="pause">
             </button>
 
+            <ng-container>
+              <button class="btn-controls" (click)=muteVolume()>
+                <img *ngIf="!isMute" src="../../assets/images/icons/volume.png" alt="volume">
+                <img *ngIf="isMute" src="../../assets/images/icons/mute.png" alt="mute">
+              </button>
+
+              <input
+                type="range"
+                class="progressBarVolume"
+                min="0"
+                max="1"
+                step="0.1"
+                [value]="progressBarVolumeValue"
+                (change)="changeVolume($event)"
+              />
+            </ng-container>
+
             <div class="control-time">
               <ng-container *ngIf="duration.length">
                 {{currentTime}} / {{duration}}
               </ng-container>
             </div>
 
-            <button class="btn-controls" (click)=muteVolume()>
-              <img *ngIf="!isMute" src="../../assets/images/icons/volume.png" alt="volume">
-              <img *ngIf="isMute" src="../../assets/images/icons/mute.png" alt="mute">
-            </button>
-
-            <input
-              type="range"
-              class="progressBarVolume"
-              min="0"
-              max="1"
-              step="0.1"
-              [value]="progressBarVolumeValue"
-              (change)="changeVolume($event)"
-            />
           </div>
 
           <!-- start other-controls -->
