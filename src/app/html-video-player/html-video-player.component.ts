@@ -1,21 +1,14 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { VideoOptions } from './video-options.interface';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
-import {
-  bufferCount,
-  debounceTime,
-  delay,
-  filter,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs/operators';
+import { bufferCount, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Timestamp } from './timestamp';
 import { PlayList } from './shared/play-list';
 
@@ -56,6 +49,7 @@ export class HtmlVideoPlayerComponent
   @ViewChild('bufferedAmount') bufferedAmount;
   @ViewChild('canvas') canvas;
   @ViewChild('videoControls') videoControls;
+  @ViewChild('videoPlayList', { read: ElementRef }) videoPlayList;
 
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
@@ -256,6 +250,11 @@ export class HtmlVideoPlayerComponent
           const currentTimeVideoPlayed = Math.floor(
             (100 / this.videoElement.duration) * this.videoElement.currentTime
           );
+
+          if (isNaN(currentTimeVideoPlayed)) {
+            return;
+          }
+
           this.progressBarVideoValue = currentTimeVideoPlayed;
           this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
@@ -281,15 +280,34 @@ export class HtmlVideoPlayerComponent
       })
     );
 
+    const clickOnVideoPlayList$ = fromEvent(
+      this.videoPlayList.nativeElement,
+      'click'
+    ).pipe(
+      tap(() => {
+        this.pause();
+
+        this.videoElement.currentTime = 0;
+        this.progressVideo.innerHTML = '0% played';
+        this.progressVideo.value = this.progressBarVideoValue = 0;
+
+        this.play();
+      })
+    );
+
     merge(
       clickOnPopupOtherControls$,
       clickOnLoopSegment$,
       clickOnPlayPause$,
-      timeUpdateProgressBar$
+      timeUpdateProgressBar$,
+      clickOnVideoPlayList$
     ).subscribe();
   }
 
-  emitVideo(video: PlayList): void {}
+  emitVideo(video: PlayList): void {
+    this.videoOptions.src = video.videoOptions.src;
+    this.videoOptions.poster = video.videoOptions.poster;
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
