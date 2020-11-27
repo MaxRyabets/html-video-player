@@ -1,1 +1,13 @@
-<p>video-play-list works!</p>
+<div *ngFor="let list of playList" class="container-video">
+  <div class="video">
+    <video
+      [width]="list.videoOptions.width"
+      [height]="list.videoOptions.height"
+      [src]="list.videoOptions.src"
+      [muted]="list.videoOptions.muted"
+    ></video>
+  </div>
+  <div class="title-video">
+    <span>{{list.title}}</span>
+  </div>
+</div>
