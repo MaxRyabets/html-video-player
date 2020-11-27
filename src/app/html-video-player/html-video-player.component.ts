@@ -78,7 +78,7 @@ export class HtmlVideoPlayerComponent
     return this.videoControls.nativeElement;
   }
 
-  setProgressVideoValue(event: MouseEvent): void {
+  /*setProgressVideoValue(event: MouseEvent): void {
     if (this.videoElement.currentTime < 0) {
       return;
     }
@@ -96,7 +96,7 @@ export class HtmlVideoPlayerComponent
 
     const target = event.target as HTMLTextAreaElement;
     target.innerHTML = this.progressVideo.value + '% played';
-  }
+  }*/
 
   muteVolume(): void {
     if (this.videoElement.muted && this.progressBarVolumeValue >= 0) {
@@ -235,6 +235,27 @@ export class HtmlVideoPlayerComponent
       })
     );
 
+    const clickOnProgressBarIfVideoOnPause$ = fromEvent(
+      this.progressVideo,
+      'click'
+    ).pipe(
+      tap((event: MouseEvent) => {
+        if (!this.duration.length) {
+          this.calculateDuration();
+        }
+
+        const percent = event.offsetX / this.videoElement.offsetWidth;
+
+        this.videoElement.currentTime = percent * this.videoElement.duration;
+        this.progressBarVideoValue = Math.floor(percent * 100);
+
+        this.updateTimeVideo(this.progressBarVideoValue);
+
+        const target = event.target as HTMLTextAreaElement;
+        target.innerHTML = this.progressVideo.value + '% played';
+      })
+    );
+
     const timeUpdateProgressBar$ = fromEvent(
       this.videoElement,
       'timeupdate'
@@ -288,6 +309,7 @@ export class HtmlVideoPlayerComponent
       clickOnPopupOtherControls$,
       clickOnLoopSegment$,
       clickOnPlayPause$,
+      clickOnProgressBarIfVideoOnPause$,
       timeUpdateProgressBar$,
       clickOnVideoPlayList$
     ).subscribe();
