@@ -160,7 +160,7 @@ export class HtmlVideoPlayerComponent
 
     const loopSegment$ = this.clickOnLoopSegment();
 
-    const playPause$ = this.clickOnPlayPause$();
+    const playPause$ = this.clickOnPlayPause();
 
     const progressBarIfVideoOnPause$ = this.clickOnProgressBarIfVideoOnPause();
 
@@ -168,13 +168,16 @@ export class HtmlVideoPlayerComponent
 
     const replaceVideoFromPlayList$ = this.clickOnVideoPlayList();
 
+    const videoPlayer$ = this.clickOnVideoPlayer();
+
     merge(
       popupOtherControls$,
       loopSegment$,
       playPause$,
       progressBarIfVideoOnPause$,
       updateProgressBar$,
-      replaceVideoFromPlayList$
+      replaceVideoFromPlayList$,
+      videoPlayer$
     ).subscribe();
   }
 
@@ -342,21 +345,24 @@ export class HtmlVideoPlayerComponent
     );
   }
 
-  private clickOnPlayPause$(): Observable<MouseEvent> {
+  private clickOnVideoPlayer(): Observable<MouseEvent> {
+    return fromEvent(this.videoElement, 'click').pipe(
+      takeUntil(this.destroy$),
+      tap((e: MouseEvent) => {
+        this.initCalculateDuration();
+
+        this.changeActionPlayPause();
+      })
+    );
+  }
+
+  private clickOnPlayPause(): Observable<MouseEvent> {
     return fromEvent(this.playPause.nativeElement, 'click').pipe(
       takeUntil(this.destroy$),
       tap((e: MouseEvent) => {
-        if (!this.duration.length) {
-          this.calculateDuration();
-        }
+        this.initCalculateDuration();
 
-        if (this.videoElement.paused) {
-          this.play();
-
-          return;
-        }
-
-        this.pause();
+        this.changeActionPlayPause();
       })
     );
   }
@@ -431,5 +437,21 @@ export class HtmlVideoPlayerComponent
       this.isDisabledLoopVideoSegment &&
       this.videoElement.currentTime > this.endSegment
     );
+  }
+
+  private changeActionPlayPause(): void {
+    if (this.videoElement.paused) {
+      this.play();
+
+      return;
+    }
+
+    this.pause();
+  }
+
+  private initCalculateDuration(): void {
+    if (!this.duration.length) {
+      this.calculateDuration();
+    }
   }
 }
