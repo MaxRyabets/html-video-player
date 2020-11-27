@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { PlayList } from '../shared/play-list';
 import { VideoPlayListService } from './video-play-list.service';
 import { takeUntil, tap } from 'rxjs/operators';
@@ -10,6 +16,8 @@ import { Subject } from 'rxjs';
   styleUrls: ['./video-play-list.component.scss'],
 })
 export class VideoPlayListComponent implements OnInit, OnDestroy {
+  @Output() emitVideo: EventEmitter<PlayList> = new EventEmitter<PlayList>();
+
   playList: PlayList[] = [];
 
   duration = '';
@@ -37,5 +45,9 @@ export class VideoPlayListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  clickOnVideo(list: PlayList): void {
+    this.emitVideo.emit(list);
   }
 }

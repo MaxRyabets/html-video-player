@@ -1,4 +1,8 @@
-<div *ngFor="let list of playList" class="container-video">
+<div
+  *ngFor="let list of playList"
+  class="container-video"
+  (click)="clickOnVideo(list)"
+>
   <div class="video">
     <video
       [width]="list.videoOptions.width"

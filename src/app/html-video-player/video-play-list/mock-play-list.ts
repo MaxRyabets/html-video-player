@@ -56,4 +56,15 @@ export const playList: PlayList[] = [
       muted: 'muted',
     },
   },
+  {
+    id: 6,
+    title: 'Video number 6',
+    videoOptions: {
+      width: 200,
+      height: 100,
+      src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
+      poster: '',
+      muted: 'muted',
+    },
+  },
 ];

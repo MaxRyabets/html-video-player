@@ -7,6 +7,7 @@
         [height]="videoOptions.height"
         [src]="videoOptions.src"
         [muted]="videoOptions.muted"
+        [poster]="videoOptions.poster"
         [ngClass]="{videoFullScreen: isFullScreen}"
       >
       </video>
@@ -109,6 +110,6 @@
     <!-- end output snapshot -->
   </section>
   <section class="right-video-container">
-    <app-video-play-list></app-video-play-list>
+    <app-video-play-list (emitVideo)="emitVideo($event)"></app-video-play-list>
   </section>
 </section>

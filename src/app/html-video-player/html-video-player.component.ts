@@ -17,6 +17,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { Timestamp } from './timestamp';
+import { PlayList } from './shared/play-list';
 
 @Component({
   selector: 'app-html-video-player',
@@ -44,6 +45,7 @@ export class HtmlVideoPlayerComponent
     height: 300,
     src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
     muted: '',
+    poster: '',
   };
 
   @ViewChild('containerVideoElement') containerVideoElement;
@@ -286,6 +288,8 @@ export class HtmlVideoPlayerComponent
       timeUpdateProgressBar$
     ).subscribe();
   }
+
+  emitVideo(video: PlayList): void {}
 
   ngOnDestroy(): void {
     this.destroy$.next();
