@@ -3,19 +3,20 @@ import {
   Directive,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
 import { Timestamp } from './timestamp';
-import { fromEvent } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 import { VideoDuration } from './shared/video-duration';
 
 @Directive({
   selector: '[appCalculateTimeVideo]',
 })
-export class CalculateTimeVideoDirective implements AfterViewInit {
+export class CalculateTimeVideoDirective implements AfterViewInit, OnDestroy {
   @Input('appCalculateTimeVideo') video;
   @Input() videoId;
   @Output()
@@ -23,7 +24,7 @@ export class CalculateTimeVideoDirective implements AfterViewInit {
   duration = '';
   currentTime = '';
 
-  constructor() {}
+  destroy$ = new Subject();
 
   ngAfterViewInit(): void {
     this.initCalculateDuration();
@@ -71,17 +72,19 @@ export class CalculateTimeVideoDirective implements AfterViewInit {
     this.calcDuration.emit(videoDuration);
   }
 
-  initCalculateDuration(): void {
+  private initCalculateDuration(): void {
     fromEvent(window, 'load')
       .pipe(
+        takeUntil(this.destroy$),
         tap(() => {
           this.calculateDuration();
         })
       )
       .subscribe();
+  }
 
-    /*if (!this.duration.length) {
-      this.calculateDuration();
-    }*/
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
