@@ -67,18 +67,19 @@ input[type="range"] {
     .controls {
       .container-progress-bar-video {
         cursor: pointer;
+        position: relative;
 
         .progress-bar-video {
           width: 100%;
           margin-bottom: 5px;
           border: none;
           vertical-align: middle;
-          background: #0075ff;
+          background-color: rgba(117, 190, 218, 0.0);
         }
 
         .progress-bar-video[value] {
           &::-webkit-progress-bar {
-            background-color: #8432ca;
+            background-color: rgba(117, 190, 218, 0.0);
             border-radius: 2px;
           }
         }
@@ -86,6 +87,18 @@ input[type="range"] {
         .progress-bar-video[value] {
           &::-webkit-progress-value {
             background-color: #0075ff;
+            height: 5px;
+            box-sizing: unset;
+            position:absolute;
+            top: 5px;
+          }
+        }
+
+        .timeline {
+          width: 100%;
+
+          .segment {
+            border: 1px solid black;
           }
         }
       }

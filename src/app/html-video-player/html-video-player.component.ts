@@ -138,10 +138,7 @@ export class HtmlVideoPlayerComponent
     }
     this.zoom += 0.1;
 
-    // number of increase pixels
-    const pixel = 20;
-
-    this.changeMarginTopAfterZoom(pixel);
+    this.changeMarginTopAfterZoom();
   }
 
   zoomOut(): void {
@@ -150,10 +147,7 @@ export class HtmlVideoPlayerComponent
     }
     this.zoom -= 0.1;
 
-    // number of degrease pixels
-    const pixel = -20;
-
-    this.changeMarginTopAfterZoom(pixel);
+    this.changeMarginTopAfterZoom();
   }
 
   ngAfterViewInit(): void {
@@ -281,7 +275,7 @@ export class HtmlVideoPlayerComponent
     );
   }
 
-  private changeMarginTopAfterZoom(pixel: number): void {
+  private changeMarginTopAfterZoom(): void {
     this.videoElement.style.transform = `scale(${this.zoom}) rotate(0deg)`;
   }
 
