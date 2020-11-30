@@ -11,6 +11,7 @@ import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import { bufferCount, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Timestamp } from './timestamp';
 import { PlayList } from './shared/play-list';
+import { VideoDuration } from './shared/video-duration';
 
 @Component({
   selector: 'app-html-video-player',
@@ -203,23 +204,12 @@ export class HtmlVideoPlayerComponent
     };
   }
 
-  private calculateDuration(): void {
-    const timestamp = this.videoElement.duration;
+  calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
+    this.duration = videoDuration.duration;
+  }
 
-    const timeVideoPlayed = this.calculateTime(timestamp);
-    let hours = timeVideoPlayed.hours;
-
-    this.duration = [
-      timeVideoPlayed.minutes.toString().padStart(2, '0'),
-      timeVideoPlayed.seconds.toString().padStart(2, '0'),
-    ].join(':');
-
-    if (hours === 0) {
-      return;
-    }
-
-    hours = hours.toString().padStart(2, '0') + ':';
-    this.duration = hours + this.duration;
+  calculateDurationFromPlayList(duration: string): void {
+    this.duration = duration;
   }
 
   private calculateCurrentTime(timeVideoPlayed: Timestamp): void {
@@ -349,8 +339,6 @@ export class HtmlVideoPlayerComponent
     return fromEvent(this.videoElement, 'click').pipe(
       takeUntil(this.destroy$),
       tap((e: MouseEvent) => {
-        this.initCalculateDuration();
-
         this.changeActionPlayPause();
       })
     );
@@ -360,8 +348,6 @@ export class HtmlVideoPlayerComponent
     return fromEvent(this.playPause.nativeElement, 'click').pipe(
       takeUntil(this.destroy$),
       tap((e: MouseEvent) => {
-        this.initCalculateDuration();
-
         this.changeActionPlayPause();
       })
     );
@@ -371,10 +357,6 @@ export class HtmlVideoPlayerComponent
     return fromEvent(this.progressVideo, 'click').pipe(
       takeUntil(this.destroy$),
       tap((event: MouseEvent) => {
-        if (!this.duration.length) {
-          this.calculateDuration();
-        }
-
         const percent = event.offsetX / this.videoElement.offsetWidth;
 
         this.videoElement.currentTime = percent * this.videoElement.duration;
@@ -447,11 +429,5 @@ export class HtmlVideoPlayerComponent
     }
 
     this.pause();
-  }
-
-  private initCalculateDuration(): void {
-    if (!this.duration.length) {
-      this.calculateDuration();
-    }
   }
 }

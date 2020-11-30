@@ -9,6 +9,7 @@
       [appCalculateTimeVideo]="video"
       [videoId]="list.id"
       (calcDuration)="calculateDuration($event)"
+      (click)="onClickVideo(list.duration)"
       [width]="list.videoOptions.width"
       [height]="list.videoOptions.height"
       [src]="list.videoOptions.src"

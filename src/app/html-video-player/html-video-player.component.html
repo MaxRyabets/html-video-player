@@ -3,6 +3,8 @@
     <figure #containerVideoElement [ngClass]="{containerFullScreen: isFullScreen}">
       <video
         #video
+        [appCalculateTimeVideo]="video"
+        (calcDuration)="calculateDurationAfterFirstInitVideo($event)"
         [width]="videoOptions.width"
         [height]="videoOptions.height"
         [src]="videoOptions.src"
@@ -56,7 +58,7 @@
             </ng-container>
 
             <div class="control-time">
-              <ng-container *ngIf="duration.length">
+              <ng-container *ngIf="currentTime.length">
                 {{currentTime}} / {{duration}}
               </ng-container>
             </div>
@@ -108,10 +110,19 @@
     </figure>
 
     <!-- start output snapshot -->
-    <canvas #canvas [width]="videoOptions.width" [height]="videoOptions.height"></canvas>
+    <canvas
+      #canvas
+      [width]="videoOptions.width"
+      [height]="videoOptions.height"
+    ></canvas>
     <!-- end output snapshot -->
+
   </section>
   <section class="right-video-container">
-    <app-video-play-list #videoPlayList (emitVideo)="changePropertiesVideo($event)"></app-video-play-list>
+    <app-video-play-list
+      #videoPlayList
+      (emitDuration)="calculateDurationFromPlayList($event)"
+      (emitVideo)="changePropertiesVideo($event)"
+    ></app-video-play-list>
   </section>
 </section>
