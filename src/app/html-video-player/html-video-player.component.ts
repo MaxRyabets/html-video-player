@@ -282,14 +282,7 @@ export class HtmlVideoPlayerComponent
   }
 
   private changeMarginTopAfterZoom(pixel: number): void {
-    this.videoElement.style.transform = `scale(${this.zoom})`;
-
-    const marginTopControls =
-      (+this.controls.style.marginTop.replace('px', '') + pixel).toString() +
-      'px';
-
-    this.controls.style.marginTop = marginTopControls;
-    this.videoElement.style.marginTop = marginTopControls;
+    this.videoElement.style.transform = `scale(${this.zoom}) rotate(0deg)`;
   }
 
   private clickOnPopupOtherControls(): Observable<MouseEvent> {

@@ -38,22 +38,29 @@ input[type="range"] {
 
 .wrapper-video {
   display: flex;
+  margin-top: 20px;
 
   .left-video-container {
-    .containerFullScreen {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+    .container-video {
+      height: 295px;
+      overflow: hidden;
+      position: relative;
 
-      .videoFullScreen {
-        width: 100%;
-        height: 100%;
-      }
+      .containerFullScreen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
 
-      .controlsFullScreen {
-        width: 100%;
-        margin-bottom: 15px;
+        .videoFullScreen {
+          width: 100%;
+          height: 100%;
+        }
+
+        .controlsFullScreen {
+          width: 100%;
+          margin-bottom: 15px;
+        }
       }
     }
 
@@ -183,6 +190,7 @@ input[type="range"] {
     width: 250px;
     height: 300px;
     margin-top: 18px;
+    margin-left: 10px;
     overflow: auto;
   }
 }
