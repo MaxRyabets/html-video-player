@@ -5,12 +5,20 @@
 >
   <div class="video">
     <video
+      #video
+      [appCalculateTimeVideo]="video"
+      [videoId]="list.id"
+      (calcDuration)="calculateDuration($event)"
       [width]="list.videoOptions.width"
       [height]="list.videoOptions.height"
       [src]="list.videoOptions.src"
       [poster]="list.videoOptions.poster"
       [muted]="list.videoOptions.muted"
+      preload="metadata"
     ></video>
+    <span class="video-duration">
+      {{list.duration}}
+    </span>
   </div>
   <div class="title-video">
     <span>{{list.title}}</span>

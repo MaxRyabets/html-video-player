@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   OnDestroy,
@@ -9,6 +10,7 @@ import { PlayList } from '../shared/play-list';
 import { VideoPlayListService } from './video-play-list.service';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { VideoDuration } from '../shared/video-duration';
 
 @Component({
   selector: 'app-video-play-list',
@@ -49,5 +51,13 @@ export class VideoPlayListComponent implements OnInit, OnDestroy {
 
   clickOnVideo(list: PlayList): void {
     this.emitVideo.emit(list);
+  }
+
+  calculateDuration(videoDuration: VideoDuration): void {
+    this.playList.forEach((video) => {
+      if (video.id === videoDuration.id) {
+        video.duration = videoDuration.duration;
+      }
+    });
   }
 }
