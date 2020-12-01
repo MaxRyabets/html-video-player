@@ -90,6 +90,7 @@ input[type="range"] {
 
         .timeline {
           width: 100%;
+          border-spacing: unset;
 
           .segment {
             border: 1px solid black;
@@ -181,7 +182,7 @@ input[type="range"] {
               flex-direction: column-reverse;
               position: absolute;
               width: 70px;
-              top: -138px;
+              top: -134px;
               right: 0;
               background-color: #d1f2f8;
               border: 1px solid #acbec4;

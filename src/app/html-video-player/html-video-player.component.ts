@@ -30,6 +30,7 @@ export class HtmlVideoPlayerComponent
   isMute = false;
 
   videoZoom = 1;
+  progressBarZoom = 0;
 
   destroy$ = new Subject();
 
@@ -151,6 +152,52 @@ export class HtmlVideoPlayerComponent
     this.changeVideoZoom();
   }
 
+  zoomInProgressBar(): void {
+    if (this.progressBarZoom > 2) {
+      return;
+    }
+
+    const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
+
+    if (lenTimelineTr) {
+      this.removeCellsTimeline();
+    }
+
+    this.progressBarZoom++;
+
+    if (this.progressBarZoom === 1) {
+      const divider = 5;
+      this.addCellsTimeline(divider);
+    }
+  }
+
+  zoomOutProgressBar(): void {
+    if (this.progressBarZoom === 0) {
+      return;
+    }
+
+    if (this.progressBarZoom === 1) {
+      this.removeCellsTimeline();
+
+      this.progressBarZoom--;
+    }
+  }
+
+  calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
+    this.duration = videoDuration.duration;
+
+    // 3600 sec in 1 hour
+    if (this.videoElement.duration < 3600) {
+      const divider = 20;
+
+      this.addCellsTimeline(divider);
+    }
+  }
+
+  calculateDurationFromPlayList(duration: string): void {
+    this.duration = duration;
+  }
+
   ngAfterViewInit(): void {
     const popupOtherControls$ = this.clickOnPopupOtherControls();
 
@@ -197,14 +244,6 @@ export class HtmlVideoPlayerComponent
       minutes,
       seconds,
     };
-  }
-
-  calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
-    this.duration = videoDuration.duration;
-  }
-
-  calculateDurationFromPlayList(duration: string): void {
-    this.duration = duration;
   }
 
   private calculateCurrentTime(timeVideoPlayed: Timestamp): void {
@@ -417,5 +456,21 @@ export class HtmlVideoPlayerComponent
     }
 
     this.pause();
+  }
+
+  private addCellsTimeline(divider: number): void {
+    for (let i = 0; i < this.videoElement.duration; i++) {
+      if (i % divider === 0) {
+        const tr = this.timelineTr.nativeElement.insertCell(0);
+        tr.style.border = '1px solid black';
+      }
+    }
+  }
+
+  private removeCellsTimeline(): void {
+    const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
+    for (let i = 0; i < lenTimelineTr; i++) {
+      this.timelineTr.nativeElement.deleteCell(0);
+    }
   }
 }
