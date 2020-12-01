@@ -173,6 +173,8 @@ export class HtmlVideoPlayerComponent
 
   zoomOutProgressBar(): void {
     if (this.progressBarZoom === 0) {
+      this.addDefaultZoomForProgressBar();
+
       return;
     }
 
@@ -181,6 +183,10 @@ export class HtmlVideoPlayerComponent
 
       this.progressBarZoom--;
     }
+
+    if (this.progressBarZoom === 0) {
+      this.addDefaultZoomForProgressBar();
+    }
   }
 
   calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
@@ -188,9 +194,7 @@ export class HtmlVideoPlayerComponent
 
     // 3600 sec in 1 hour
     if (this.videoElement.duration < 3600) {
-      const divider = 20;
-
-      this.addCellsTimeline(divider);
+      this.addDefaultZoomForProgressBar();
     }
   }
 
@@ -472,5 +476,11 @@ export class HtmlVideoPlayerComponent
     for (let i = 0; i < lenTimelineTr; i++) {
       this.timelineTr.nativeElement.deleteCell(0);
     }
+  }
+
+  private addDefaultZoomForProgressBar(): void {
+    const divider = 20;
+
+    this.addCellsTimeline(divider);
   }
 }
