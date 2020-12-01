@@ -29,7 +29,7 @@ export class HtmlVideoPlayerComponent
   isPlay = false;
   isMute = false;
 
-  zoom = 1;
+  videoZoom = 1;
 
   destroy$ = new Subject();
 
@@ -51,6 +51,7 @@ export class HtmlVideoPlayerComponent
   @ViewChild('canvas') canvas;
   @ViewChild('videoControls') videoControls;
   @ViewChild('videoPlayList', { read: ElementRef }) videoPlayList;
+  @ViewChild('timelineTr') timelineTr;
 
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
@@ -132,22 +133,22 @@ export class HtmlVideoPlayerComponent
     );
   }
 
-  zoomIn(): void {
-    if (this.zoom > 2) {
+  zoomInVideo(): void {
+    if (this.videoZoom > 2) {
       return;
     }
-    this.zoom += 0.1;
+    this.videoZoom += 0.1;
 
-    this.changeMarginTopAfterZoom();
+    this.changeVideoZoom();
   }
 
-  zoomOut(): void {
-    if (this.zoom === 1) {
+  zoomOutVideo(): void {
+    if (this.videoZoom === 1) {
       return;
     }
-    this.zoom -= 0.1;
+    this.videoZoom -= 0.1;
 
-    this.changeMarginTopAfterZoom();
+    this.changeVideoZoom();
   }
 
   ngAfterViewInit(): void {
@@ -275,8 +276,8 @@ export class HtmlVideoPlayerComponent
     );
   }
 
-  private changeMarginTopAfterZoom(): void {
-    this.videoElement.style.transform = `scale(${this.zoom}) rotate(0deg)`;
+  private changeVideoZoom(): void {
+    this.videoElement.style.transform = `scale(${this.videoZoom}) rotate(0deg)`;
   }
 
   private clickOnPopupOtherControls(): Observable<MouseEvent> {
