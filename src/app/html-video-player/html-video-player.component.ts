@@ -157,11 +157,11 @@ export class HtmlVideoPlayerComponent
       return;
     }
 
-    const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
+    /*const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
 
     if (lenTimelineTr) {
       this.removeCellsTimeline();
-    }
+    }*/
 
     this.progressBarZoom++;
 
@@ -463,19 +463,34 @@ export class HtmlVideoPlayerComponent
   }
 
   private addCellsTimeline(divider: number): void {
-    for (let i = 0; i < this.videoElement.duration; i++) {
-      if (i % divider === 0) {
-        const tr = this.timelineTr.nativeElement.insertCell(0);
-        tr.style.border = '1px solid black';
+    /*for (let i = 0; i < this.videoElement.duration; i++) {
+      if (i % divider === 0 && i % 20 !== 0 && divider !== 20 && i !== 0) {
+        const td = document.createElement('td');
+        td.style.borderTop = '1px solid black';
+        td.style.borderBottom = '1px solid black';
+        td.style.borderRight = '5px solid slateblue';
+        td.style.borderLeft = '5px solid slateblue';
+
+        this.timelineTr.nativeElement.appendChild(td);
       }
-    }
+
+      if (i % divider === 0 && i % 20 === 0) {
+        const td = document.createElement('td');
+        td.style.borderTop = '1px solid black';
+        td.style.borderBottom = '1px solid black';
+        td.style.borderRight = '5px solid #0075ff';
+        td.style.borderLeft = '5px solid #0075ff';
+
+        this.timelineTr.nativeElement.appendChild(td);
+      }
+    }*/
   }
 
   private removeCellsTimeline(): void {
-    const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
+    /*const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
     for (let i = 0; i < lenTimelineTr; i++) {
       this.timelineTr.nativeElement.deleteCell(0);
-    }
+    }*/
   }
 
   private addDefaultZoomForProgressBar(): void {
