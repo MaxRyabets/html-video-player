@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
+import { log } from 'util';
 
 @Component({
   selector: 'app-zoom-progress-bar',
@@ -17,6 +18,16 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     xmin: 0,
     ymax: 40,
     ymin: 0,
+    title: 'Simple Graph1',
+    xlabel: 'X Axis',
+    ylabel: 'Y Axis',
+  };
+
+  padding = {
+    top: this.options.title ? 40 : 20,
+    right: 30,
+    bottom: this.options.xlabel ? 60 : 10,
+    left: this.options.ylabel ? 70 : 45,
   };
 
   size: any;
@@ -37,7 +48,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   yrange4 = this.yrange2 / 2;
   datacount: any;
 
-  vis: any;
+  svg: any;
   plot: any;
 
   getPoints(): any {
@@ -54,8 +65,8 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     this.cy = this.chartZoom.nativeElement.clientHeight;
 
     this.size = {
-      width: this.cx,
-      height: this.cy,
+      width: this.cx - this.padding.left - this.padding.right,
+      height: this.cy - this.padding.top - this.padding.bottom,
     };
 
     this.x = d3
@@ -74,24 +85,26 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     this.points = this.getPoints();
 
-    this.vis = d3
+    this.svg = d3
       .select(this.chartZoom.nativeElement)
       .append('svg')
       .attr('width', this.cx)
-      .attr('height', this.cy);
+      .attr('height', this.cy)
+      .append('g')
+      .attr(
+        'transform',
+        'translate(' + this.padding.left + ',' + this.padding.top + ')'
+      );
 
-    this.plot = this.vis
+    this.plot = this.svg
       .append('rect')
       .attr('width', this.size.width)
       .attr('height', this.size.height)
       .style('fill', '#EEEEEE')
-      .attr('pointer-events', 'all');
+      .attr('pointer-events', 'all')
+      .call(d3.zoom().on('zoom', this.redraw()));
 
-    this.plot.call(
-      d3.zoom().scaleExtent([this.x, this.y]).on('zoom', this.redraw())
-    );
-
-    this.vis
+    this.svg
       .append('svg')
       .attr('top', 0)
       .attr('left', 0)
@@ -106,9 +119,11 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   }
 
   redraw(): any {
+    console.count();
     return () => {
       const tx = (d) => {
-        console.log('test', 'translate(' + this.x(d) + ',0)');
+        /*console.log('test', 'translate(' + this.x(d) + ',0)');*/
+        console.log(d);
         return 'translate(' + this.x(d) + ',0)';
       };
 
@@ -118,13 +133,14 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       const fx = this.x.tickFormat(10);
 
       // Regenerate x-ticks…
-      const gx = this.vis
+      const gx = this.svg
         .selectAll('g.x')
         .data(this.x.ticks(10), String)
         .attr('transform', tx);
 
       gx.select('text').text(fx);
 
+      console.log(gx);
       const gxe = gx
         .enter()
         .insert('g', 'a')
