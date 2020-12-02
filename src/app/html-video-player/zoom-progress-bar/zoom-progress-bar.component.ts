@@ -17,16 +17,6 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     xmin: 0,
     ymax: 40,
     ymin: 0,
-    title: 'Simple Graph1',
-    xlabel: 'X Axis',
-    ylabel: 'Y Axis',
-  };
-
-  padding = {
-    top: this.options.title ? 40 : 20,
-    right: 30,
-    bottom: this.options.xlabel ? 60 : 10,
-    left: this.options.ylabel ? 70 : 45,
   };
 
   size: any;
@@ -39,8 +29,6 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
   dragged = null;
   selected = null;
-
-  line: any;
 
   points: any;
 
@@ -66,8 +54,8 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     this.cy = this.chartZoom.nativeElement.clientHeight;
 
     this.size = {
-      width: this.cx - this.padding.left - this.padding.right,
-      height: this.cy - this.padding.top - this.padding.bottom,
+      width: this.cx,
+      height: this.cy,
     };
 
     this.x = d3
@@ -84,27 +72,13 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     this.datacount = this.size.width / 30;
 
-    this.line = d3
-      .line()
-      .x((d, i) => {
-        return this.x(this.points[i].x);
-      })
-      .y((d, i) => {
-        return this.y(this.points[i].y);
-      });
-
     this.points = this.getPoints();
 
     this.vis = d3
       .select(this.chartZoom.nativeElement)
       .append('svg')
       .attr('width', this.cx)
-      .attr('height', this.cy)
-      .append('g')
-      .attr(
-        'transform',
-        'translate(' + this.padding.left + ',' + this.padding.top + ')'
-      );
+      .attr('height', this.cy);
 
     this.plot = this.vis
       .append('rect')
@@ -113,7 +87,9 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .style('fill', '#EEEEEE')
       .attr('pointer-events', 'all');
 
-    this.plot.call(d3.zoom().scaleExtent([1, 100]).on('zoom', this.redraw()));
+    this.plot.call(
+      d3.zoom().scaleExtent([this.x, this.y]).on('zoom', this.redraw())
+    );
 
     this.vis
       .append('svg')
@@ -124,8 +100,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .attr('viewBox', '0 0 ' + this.size.width + ' ' + this.size.height)
       .attr('class', 'line')
       .append('path')
-      .attr('class', 'line')
-      .attr('d', this.line(this.points));
+      .attr('class', 'line');
 
     d3.select(this.chartZoom.nativeElement);
   }
