@@ -97,13 +97,11 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     const gGrid = svg.append('g');
 
-    const gDot = svg
+    // @ts-ignore
+    const gDot: any = svg
       .append('g')
       .attr('fill', 'none')
-      .attr('stroke-linecap', 'round');
-
-    // @ts-ignore
-    gDot
+      .attr('stroke-linecap', 'round')
       .selectAll('path')
       .data(this.data)
       .join('path')
