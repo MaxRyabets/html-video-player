@@ -11,8 +11,8 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
   chart: any;
 
-  width = 954;
-  height = 600;
+  width = 700;
+  height = 20;
 
   k = this.height / this.width;
 
@@ -37,28 +37,13 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     const x = d3.scaleLinear().domain([-4.5, 4.5]).range([0, this.width]);
 
-    const y = d3
-      .scaleLinear()
-      .domain([-4.5 * this.k, 4.5 * this.k])
-      .range([this.height, 0]);
-
-    const z = d3
-      .scaleOrdinal()
-      .domain(this.data.map((d) => d[2]))
-      .range(d3.schemeCategory10);
-
     const xAxis = (g, currentX) =>
       g
         .attr('transform', `translate(0,${this.height})`)
         .call(d3.axisTop(currentX).ticks(12))
         .call((c) => c.select('.domain').attr('display', 'none'));
 
-    const yAxis = (g, currentY) =>
-      g
-        .call(d3.axisRight(currentY).ticks(12 * this.k))
-        .call((c) => c.select('.domain').attr('display', 'none'));
-
-    const grid = (g, currentX, currentY) =>
+    const grid = (g, currentX) =>
       g
         .attr('stroke', 'currentColor')
         .attr('stroke-opacity', 0.1)
@@ -74,19 +59,6 @@ export class ZoomProgressBarComponent implements AfterViewInit {
             )
             .attr('x1', (d) => 0.5 + currentX(d))
             .attr('x2', (d) => 0.5 + currentX(d))
-        )
-        .call((c) =>
-          c
-            .selectAll('.y')
-            .data(currentY.ticks(12 * this.k))
-            .join(
-              (enter) =>
-                enter.append('line').attr('class', 'y').attr('x2', this.width),
-              (update) => update,
-              (exit) => exit.remove()
-            )
-            .attr('y1', (d) => 0.5 + currentY(d))
-            .attr('y2', (d) => 0.5 + currentY(d))
         );
 
     const svg = d3
@@ -97,30 +69,23 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     const gGrid = svg.append('g');
 
-    // @ts-ignore
     const gDot: any = svg
       .append('g')
       .attr('fill', 'none')
-      .attr('stroke-linecap', 'round')
       .selectAll('path')
       .data(this.data)
-      .join('path')
-      .attr('d', (d) => `M${x(d[0])},${y(d[1])}h0`)
-      .attr('stroke', (d) => z(d[2]));
+      .join('path');
 
     const gx = svg.append('g');
-
-    const gy = svg.append('g');
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
 
     function zoomed({ transform }): void {
       const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
-      const zy = transform.rescaleY(y).interpolate(d3.interpolateRound);
+
       gDot.attr('transform', transform).attr('stroke-width', 5 / transform.k);
       gx.call(xAxis, zx);
-      gy.call(yAxis, zy);
-      gGrid.call(grid, zx, zy);
+      gGrid.call(grid, zx);
     }
 
     return Object.assign(svg.node(), {
