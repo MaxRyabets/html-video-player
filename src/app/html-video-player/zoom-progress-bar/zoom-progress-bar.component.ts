@@ -25,6 +25,10 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .zoom()
       .scaleExtent([1, 32])
       .translateExtent([
+        [7, 0],
+        [this.width, this.height],
+      ])
+      .extent([
         [0, 0],
         [this.width, this.height],
       ])

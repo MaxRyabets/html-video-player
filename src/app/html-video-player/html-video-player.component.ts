@@ -18,7 +18,6 @@ import { VideoDuration } from './shared/video-duration';
   selector: 'app-html-video-player',
   templateUrl: './html-video-player.component.html',
   styleUrls: ['./html-video-player.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HtmlVideoPlayerComponent
   implements OnInit, AfterViewInit, OnDestroy {
