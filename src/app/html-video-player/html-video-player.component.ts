@@ -429,4 +429,10 @@ export class HtmlVideoPlayerComponent
 
     this.pause();
   }
+
+  timeUpdateAfterClickOnTimeline(time: string): void {
+    this.videoElement.currentTime = +time;
+    this.progressBarVideoValue = this.videoElement.currentTime;
+    this.progressVideo.innerHTML = this.videoElement.currentTime + '% played';
+  }
 }

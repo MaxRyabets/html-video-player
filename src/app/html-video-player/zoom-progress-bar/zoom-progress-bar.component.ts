@@ -1,15 +1,26 @@
-import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
   selector: 'app-zoom-progress-bar',
   templateUrl: './zoom-progress-bar.component.html',
   styleUrls: ['./zoom-progress-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ZoomProgressBarComponent implements AfterViewInit {
   @ViewChild('chart') chartZoom;
 
   @Input() duration;
+  @Output()
+  emitOnClickTimeLine: EventEmitter<string> = new EventEmitter<string>();
 
   width = 700;
   height = 20;
@@ -54,7 +65,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         .call((c) =>
           c
             .selectAll('.x')
-            .data(currentX.ticks(25))
+            .data(currentX.ticks(12))
             .join(
               (enter) =>
                 enter.append('line').attr('class', 'x').attr('y2', this.height),
@@ -71,23 +82,17 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .attr('width', this.width)
       .attr('height', this.height);
 
-    const gDot = svg
-      .append('g')
-      .attr('fill', 'none')
-      .attr('stroke-linecap', 'round')
-      .selectAll('path')
-      .join('path')
-      .attr('d', (d) => `M${x(d[0])}`);
-
     const gGrid = svg.append('g');
 
-    const gx = svg.append('g');
+    const gx = svg.append('g').on('click', (d) => {
+      this.emitOnClickTimeLine.emit(d.toElement.innerHTML);
+      console.log('svg click', d, d.toElement.innerHTML);
+    });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
 
     function zoomed({ transform }): void {
       const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
-      gDot.attr('transform', transform).attr('stroke-width', 5 / transform.k);
 
       gx.call(xAxis, zx);
       gGrid.call(grid, zx);

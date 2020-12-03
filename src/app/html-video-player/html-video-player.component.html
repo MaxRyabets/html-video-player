@@ -33,7 +33,10 @@
         </div>
         <!-- end progress bar -->
         <ng-container *ngIf="shouldSecondsDuration()">
-          <app-zoom-progress-bar [duration]="secondsDuration"></app-zoom-progress-bar>
+          <app-zoom-progress-bar
+            [duration]="secondsDuration"
+            (emitOnClickTimeLine)="timeUpdateAfterClickOnTimeline($event)"
+          ></app-zoom-progress-bar>
         </ng-container>
         <!-- start button controls -->
         <div class="container-buttons-controls">
