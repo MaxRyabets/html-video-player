@@ -53,26 +53,12 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     const xAxis = (g, currentX) =>
       g
         .attr('transform', `translate(0,${this.height})`)
+        .attr('class', 'chart-line')
         .call(d3.axisTop(currentX).ticks(12))
         .call((c) => c.select('.domain').attr('display', 'none'));
 
     const grid = (g, currentX) =>
-      g
-        .attr('stroke', 'currentColor')
-        .attr('stroke-opacity', 0.1)
-        .call((c) =>
-          c
-            .selectAll('.x')
-            .data(currentX.ticks(12))
-            .join(
-              (enter) =>
-                enter.append('line').attr('class', 'x').attr('y2', this.height),
-              (update) => update,
-              (exit) => exit.remove()
-            )
-            .attr('x1', (d) => 0.5 + currentX(d))
-            .attr('x2', (d) => 0.5 + currentX(d))
-        );
+      g.call((c) => c.selectAll('.x').data(currentX.ticks(12)));
 
     let line;
 
@@ -102,6 +88,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     function zoomed({ transform }): void {
       const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
+      console.log('zx', line);
 
       gx.call(xAxis, zx);
       gGrid.call(grid, zx);

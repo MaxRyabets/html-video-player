@@ -8,3 +8,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   stroke-width: 5px;
   stroke-linecap: round;
 }
+
+.chart-line g line{
+  opacity: 0;
+}
