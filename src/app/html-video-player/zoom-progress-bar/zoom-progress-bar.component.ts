@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
-import { log } from 'util';
 
 @Component({
   selector: 'app-zoom-progress-bar',
@@ -10,159 +9,126 @@ import { log } from 'util';
 export class ZoomProgressBarComponent implements AfterViewInit {
   @ViewChild('chart') chartZoom;
 
-  cx: any;
-  cy: any;
+  chart: any;
 
-  options = {
-    xmax: 60,
-    xmin: 0,
-    ymax: 40,
-    ymin: 0,
-    title: 'Simple Graph1',
-    xlabel: 'X Axis',
-    ylabel: 'Y Axis',
-  };
+  width = 954;
+  height = 600;
 
-  padding = {
-    top: this.options.title ? 40 : 20,
-    right: 30,
-    bottom: this.options.xlabel ? 60 : 10,
-    left: this.options.ylabel ? 70 : 45,
-  };
+  k = this.height / this.width;
 
-  size: any;
-
-  x: any;
-  y: any;
-
-  downx = NaN;
-  downy = NaN;
-
-  dragged = null;
-  selected = null;
-
-  points: any;
-
-  xrange = this.options.xmax - this.options.xmin;
-  yrange2 = (this.options.ymax - this.options.ymin) / 2;
-  yrange4 = this.yrange2 / 2;
-  datacount: any;
-
-  svg: any;
-  plot: any;
-
-  getPoints(): any {
-    return d3.range(this.datacount).map((i) => {
-      return {
-        x: (i * this.xrange) / this.datacount,
-        y: this.options.ymin + this.yrange4 + Math.random() * this.yrange2,
-      };
-    });
-  }
+  data = this.createData();
 
   ngAfterViewInit(): void {
-    this.cx = this.chartZoom.nativeElement.clientWidth;
-    this.cy = this.chartZoom.nativeElement.clientHeight;
-
-    this.size = {
-      width: this.cx - this.padding.left - this.padding.right,
-      height: this.cy - this.padding.top - this.padding.bottom,
-    };
-
-    this.x = d3
-      .scaleLinear()
-      .domain([this.options.xmin, this.options.xmax])
-      .range([0, this.size.width]);
-
-    this.y = d3
-      .scaleLinear()
-      .domain([this.options.ymax, this.options.ymin])
-      .nice()
-      .range([0, this.size.height])
-      .nice();
-
-    this.datacount = this.size.width / 30;
-
-    this.points = this.getPoints();
-
-    this.svg = d3
-      .select(this.chartZoom.nativeElement)
-      .append('svg')
-      .attr('width', this.cx)
-      .attr('height', this.cy)
-      .append('g')
-      .attr(
-        'transform',
-        'translate(' + this.padding.left + ',' + this.padding.top + ')'
-      );
-
-    this.plot = this.svg
-      .append('rect')
-      .attr('width', this.size.width)
-      .attr('height', this.size.height)
-      .style('fill', '#EEEEEE')
-      .attr('pointer-events', 'all')
-      .call(d3.zoom().on('zoom', this.redraw()));
-
-    this.svg
-      .append('svg')
-      .attr('top', 0)
-      .attr('left', 0)
-      .attr('width', this.size.width)
-      .attr('height', this.size.height)
-      .attr('viewBox', '0 0 ' + this.size.width + ' ' + this.size.height)
-      .attr('class', 'line')
-      .append('path')
-      .attr('class', 'line');
-
-    d3.select(this.chartZoom.nativeElement);
+    this.chart = this.createChart();
   }
 
-  redraw(): any {
-    console.count();
-    return () => {
-      const tx = (d) => {
-        /*console.log('test', 'translate(' + this.x(d) + ',0)');*/
-        console.log(d);
-        return 'translate(' + this.x(d) + ',0)';
-      };
+  createData(): any[] {
+    const random = d3.randomNormal(0, 0.2);
+    const sqrt3 = Math.sqrt(3);
+    return [].concat(
+      Array.from({ length: 300 }, () => [random() + sqrt3, random() + 1, 0]),
+      Array.from({ length: 300 }, () => [random() - sqrt3, random() + 1, 1]),
+      Array.from({ length: 300 }, () => [random(), random() - 1, 2])
+    );
+  }
 
-      const stroke = (d) => {
-        return d ? '#ccc' : '#666';
-      };
-      const fx = this.x.tickFormat(10);
+  private createChart(): any {
+    const zoom = d3.zoom().scaleExtent([0.5, 32]).on('zoom', zoomed);
 
-      // Regenerate x-ticks…
-      const gx = this.svg
-        .selectAll('g.x')
-        .data(this.x.ticks(10), String)
-        .attr('transform', tx);
+    const x = d3.scaleLinear().domain([-4.5, 4.5]).range([0, this.width]);
 
-      gx.select('text').text(fx);
+    const y = d3
+      .scaleLinear()
+      .domain([-4.5 * this.k, 4.5 * this.k])
+      .range([this.height, 0]);
 
-      console.log(gx);
-      const gxe = gx
-        .enter()
-        .insert('g', 'a')
-        .attr('class', 'x')
-        .attr('transform', tx);
+    const z = d3
+      .scaleOrdinal()
+      .domain(this.data.map((d) => d[2]))
+      .range(d3.schemeCategory10);
 
-      gxe
-        .append('line')
-        .attr('stroke', stroke)
-        .attr('y1', 0)
-        .attr('y2', this.size.height);
+    const xAxis = (g, currentX) =>
+      g
+        .attr('transform', `translate(0,${this.height})`)
+        .call(d3.axisTop(currentX).ticks(12))
+        .call((c) => c.select('.domain').attr('display', 'none'));
 
-      gxe
-        .append('text')
-        .attr('class', 'axis')
-        .attr('y', this.size.height)
-        .attr('dy', '1em')
-        .attr('text-anchor', 'middle')
-        .text(fx)
-        .style('cursor', 'ew-resize');
+    const yAxis = (g, currentY) =>
+      g
+        .call(d3.axisRight(currentY).ticks(12 * this.k))
+        .call((c) => c.select('.domain').attr('display', 'none'));
 
-      gx.exit().remove();
-    };
+    const grid = (g, currentX, currentY) =>
+      g
+        .attr('stroke', 'currentColor')
+        .attr('stroke-opacity', 0.1)
+        .call((c) =>
+          c
+            .selectAll('.x')
+            .data(currentX.ticks(12))
+            .join(
+              (enter) =>
+                enter.append('line').attr('class', 'x').attr('y2', this.height),
+              (update) => update,
+              (exit) => exit.remove()
+            )
+            .attr('x1', (d) => 0.5 + currentX(d))
+            .attr('x2', (d) => 0.5 + currentX(d))
+        )
+        .call((c) =>
+          c
+            .selectAll('.y')
+            .data(currentY.ticks(12 * this.k))
+            .join(
+              (enter) =>
+                enter.append('line').attr('class', 'y').attr('x2', this.width),
+              (update) => update,
+              (exit) => exit.remove()
+            )
+            .attr('y1', (d) => 0.5 + currentY(d))
+            .attr('y2', (d) => 0.5 + currentY(d))
+        );
+
+    const svg = d3
+      .select(this.chartZoom.nativeElement)
+      .append('svg')
+      .attr('width', this.width)
+      .attr('height', this.height);
+
+    const gGrid = svg.append('g');
+
+    const gDot = svg
+      .append('g')
+      .attr('fill', 'none')
+      .attr('stroke-linecap', 'round');
+
+    // @ts-ignore
+    gDot
+      .selectAll('path')
+      .data(this.data)
+      .join('path')
+      .attr('d', (d) => `M${x(d[0])},${y(d[1])}h0`)
+      .attr('stroke', (d) => z(d[2]));
+
+    const gx = svg.append('g');
+
+    const gy = svg.append('g');
+
+    svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
+
+    function zoomed({ transform }): void {
+      const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
+      const zy = transform.rescaleY(y).interpolate(d3.interpolateRound);
+      gDot.attr('transform', transform).attr('stroke-width', 5 / transform.k);
+      gx.call(xAxis, zx);
+      gy.call(yAxis, zy);
+      gGrid.call(grid, zx, zy);
+    }
+
+    return Object.assign(svg.node(), {
+      reset(): void {
+        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+      },
+    });
   }
 }
