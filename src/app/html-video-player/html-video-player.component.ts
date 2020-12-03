@@ -54,7 +54,6 @@ export class HtmlVideoPlayerComponent
   @ViewChild('canvas') canvas;
   @ViewChild('videoControls') videoControls;
   @ViewChild('videoPlayList', { read: ElementRef }) videoPlayList;
-  @ViewChild('timelineTr') timelineTr;
 
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
@@ -155,42 +154,9 @@ export class HtmlVideoPlayerComponent
     this.changeVideoZoom();
   }
 
-  zoomInProgressBar(): void {
-    if (this.progressBarZoom > 2) {
-      return;
-    }
+  zoomInProgressBar(): void {}
 
-    /*const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
-
-    if (lenTimelineTr) {
-      this.removeCellsTimeline();
-    }*/
-
-    this.progressBarZoom++;
-
-    if (this.progressBarZoom === 1) {
-      const divider = 5;
-      this.addCellsTimeline(divider);
-    }
-  }
-
-  zoomOutProgressBar(): void {
-    if (this.progressBarZoom === 0) {
-      this.addDefaultZoomForProgressBar();
-
-      return;
-    }
-
-    if (this.progressBarZoom === 1) {
-      this.removeCellsTimeline();
-
-      this.progressBarZoom--;
-    }
-
-    if (this.progressBarZoom === 0) {
-      this.addDefaultZoomForProgressBar();
-    }
-  }
+  zoomOutProgressBar(): void {}
 
   shouldSecondsDuration(): boolean {
     return this.secondsDuration !== 0;
@@ -199,11 +165,6 @@ export class HtmlVideoPlayerComponent
   calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
     this.duration = videoDuration.duration;
     this.secondsDuration = Math.round(this.videoElement.duration);
-
-    // 3600 sec in 1 hour
-    if (this.videoElement.duration < 3600) {
-      this.addDefaultZoomForProgressBar();
-    }
   }
 
   calculateDurationFromPlayList(duration: string): void {
@@ -468,42 +429,5 @@ export class HtmlVideoPlayerComponent
     }
 
     this.pause();
-  }
-
-  private addCellsTimeline(divider: number): void {
-    /*for (let i = 0; i < this.videoElement.duration; i++) {
-      if (i % divider === 0 && i % 20 !== 0 && divider !== 20 && i !== 0) {
-        const td = document.createElement('td');
-        td.style.borderTop = '1px solid black';
-        td.style.borderBottom = '1px solid black';
-        td.style.borderRight = '5px solid slateblue';
-        td.style.borderLeft = '5px solid slateblue';
-
-        this.timelineTr.nativeElement.appendChild(td);
-      }
-
-      if (i % divider === 0 && i % 20 === 0) {
-        const td = document.createElement('td');
-        td.style.borderTop = '1px solid black';
-        td.style.borderBottom = '1px solid black';
-        td.style.borderRight = '5px solid #0075ff';
-        td.style.borderLeft = '5px solid #0075ff';
-
-        this.timelineTr.nativeElement.appendChild(td);
-      }
-    }*/
-  }
-
-  private removeCellsTimeline(): void {
-    /*const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
-    for (let i = 0; i < lenTimelineTr; i++) {
-      this.timelineTr.nativeElement.deleteCell(0);
-    }*/
-  }
-
-  private addDefaultZoomForProgressBar(): void {
-    const divider = 20;
-
-    this.addCellsTimeline(divider);
   }
 }
