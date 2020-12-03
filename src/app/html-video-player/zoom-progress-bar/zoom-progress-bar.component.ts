@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -9,31 +9,33 @@ import * as d3 from 'd3';
 export class ZoomProgressBarComponent implements AfterViewInit {
   @ViewChild('chart') chartZoom;
 
+  @Input() duration;
+
   width = 700;
   height = 20;
 
   k = this.height / this.width;
 
-  data = this.createData();
-
   ngAfterViewInit(): void {
     this.createChart();
   }
 
-  createData(): any[] {
-    const random = d3.randomNormal(0, 0.2);
-    const sqrt3 = Math.sqrt(3);
-    return [].concat(
-      Array.from({ length: 300 }, () => [random() + sqrt3, random() + 1, 0]),
-      Array.from({ length: 300 }, () => [random() - sqrt3, random() + 1, 1]),
-      Array.from({ length: 300 }, () => [random(), random() - 1, 2])
-    );
-  }
-
   private createChart(): any {
-    const zoom = d3.zoom().scaleExtent([0.5, 32]).on('zoom', zoomed);
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 32])
+      .translateExtent([
+        [0, 0],
+        [this.width, this.height],
+      ])
+      .on('zoom', zoomed);
 
-    const x = d3.scaleLinear().domain([-4.5, 4.5]).range([0, this.width]);
+    console.log('duration', this.duration);
+
+    const x = d3
+      .scaleLinear()
+      .domain([-1, this.duration])
+      .range([0, this.width]);
 
     const xAxis = (g, currentX) =>
       g
@@ -48,7 +50,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         .call((c) =>
           c
             .selectAll('.x')
-            .data(currentX.ticks(12))
+            .data(currentX.ticks(25))
             .join(
               (enter) =>
                 enter.append('line').attr('class', 'x').attr('y2', this.height),
@@ -65,14 +67,15 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .attr('width', this.width)
       .attr('height', this.height);
 
-    const gGrid = svg.append('g');
-
-    const gDot: any = svg
+    const gDot = svg
       .append('g')
       .attr('fill', 'none')
+      .attr('stroke-linecap', 'round')
       .selectAll('path')
-      .data(this.data)
-      .join('path');
+      .join('path')
+      .attr('d', (d) => `M${x(d[0])}`);
+
+    const gGrid = svg.append('g');
 
     const gx = svg.append('g');
 
@@ -80,8 +83,8 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     function zoomed({ transform }): void {
       const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
-
       gDot.attr('transform', transform).attr('stroke-width', 5 / transform.k);
+
       gx.call(xAxis, zx);
       gGrid.call(grid, zx);
     }

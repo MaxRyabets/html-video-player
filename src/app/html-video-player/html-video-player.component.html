@@ -118,10 +118,11 @@
             </div>
           </div>
           <!-- end other-controls -->
-
         </div>
         <!-- end button controls -->
-
+        <ng-container *ngIf="shouldSecondsDuration()">
+          <app-zoom-progress-bar [duration]="secondsDuration"></app-zoom-progress-bar>
+        </ng-container>
       </figcaption>
       <!-- end video controls -->
     </figure>
@@ -143,4 +144,3 @@
   </section>
 </section>
 
-<app-zoom-progress-bar></app-zoom-progress-bar>

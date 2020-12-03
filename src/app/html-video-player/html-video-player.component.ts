@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnDestroy,
@@ -17,6 +18,7 @@ import { VideoDuration } from './shared/video-duration';
   selector: 'app-html-video-player',
   templateUrl: './html-video-player.component.html',
   styleUrls: ['./html-video-player.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HtmlVideoPlayerComponent
   implements OnInit, AfterViewInit, OnDestroy {
@@ -37,7 +39,7 @@ export class HtmlVideoPlayerComponent
   // for local src ../../assets/videos/movie.mp4
   videoOptions: VideoOptions = {
     width: 700,
-    height: 300,
+    height: 400,
     src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
     muted: '',
     poster: '',
@@ -61,6 +63,7 @@ export class HtmlVideoPlayerComponent
   minutes = 0;
   seconds = 0;
   duration = '';
+  secondsDuration = 0;
   currentTime = '';
 
   ngOnInit(): void {}
@@ -189,8 +192,13 @@ export class HtmlVideoPlayerComponent
     }
   }
 
+  shouldSecondsDuration(): boolean {
+    return this.secondsDuration !== 0;
+  }
+
   calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
     this.duration = videoDuration.duration;
+    this.secondsDuration = Math.round(this.videoElement.duration);
 
     // 3600 sec in 1 hour
     if (this.videoElement.duration < 3600) {

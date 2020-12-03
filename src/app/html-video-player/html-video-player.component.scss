@@ -21,11 +21,12 @@
 }
 
 video {
+  object-fit: fill;
+
   &::-webkit-media-controls{
     display:none !important;
   }
-}
-video {
+
   &::-webkit-media-controls-enclosure{
     display:none !important;
   }
@@ -197,7 +198,7 @@ input[type="range"] {
   .right-video-container {
     @include scrollbars(.5em, slateblue);
     width: 250px;
-    height: 300px;
+    height: 400px;
     margin-top: 18px;
     margin-left: 10px;
     overflow: auto;
