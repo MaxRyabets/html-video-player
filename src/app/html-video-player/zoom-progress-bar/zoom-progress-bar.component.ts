@@ -23,7 +23,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   emitOnClickTimeLine: EventEmitter<string> = new EventEmitter<string>();
 
   width = 700;
-  height = 20;
+  height = 30;
 
   k = this.height / this.width;
 
@@ -44,8 +44,6 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         [this.width, this.height],
       ])
       .on('zoom', zoomed);
-
-    console.log('duration', this.duration);
 
     const x = d3
       .scaleLinear()
@@ -76,17 +74,28 @@ export class ZoomProgressBarComponent implements AfterViewInit {
             .attr('x2', (d) => 0.5 + currentX(d))
         );
 
+    let line;
+
     const svg = d3
       .select(this.chartZoom.nativeElement)
       .append('svg')
       .attr('width', this.width)
-      .attr('height', this.height);
+      .attr('height', this.height)
+      .on('mousedown', (event) => {
+        if (line !== undefined && line._groups[0].length) {
+          line.remove();
+        }
+
+        line = svg
+          .append('line')
+          .attr('class', 'progress-line')
+          .attr('x2', event.x - 60);
+      });
 
     const gGrid = svg.append('g');
 
     const gx = svg.append('g').on('click', (d) => {
       this.emitOnClickTimeLine.emit(d.toElement.innerHTML);
-      console.log('svg click', d, d.toElement.innerHTML);
     });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
