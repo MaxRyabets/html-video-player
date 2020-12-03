@@ -9,8 +9,6 @@ import * as d3 from 'd3';
 export class ZoomProgressBarComponent implements AfterViewInit {
   @ViewChild('chart') chartZoom;
 
-  chart: any;
-
   width = 700;
   height = 20;
 
@@ -19,7 +17,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   data = this.createData();
 
   ngAfterViewInit(): void {
-    this.chart = this.createChart();
+    this.createChart();
   }
 
   createData(): any[] {
