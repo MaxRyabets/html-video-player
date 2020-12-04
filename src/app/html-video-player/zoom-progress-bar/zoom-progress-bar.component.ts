@@ -26,15 +26,18 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   height = 30;
 
   k = this.height / this.width;
+  private rememberLastPoint: any;
 
   ngAfterViewInit(): void {
     this.createChart();
   }
 
   private createChart(): any {
+    const initGrid = [];
+
     const zoom = d3
       .zoom()
-      .scaleExtent([1, 32])
+      .scaleExtent([1, 8])
       .translateExtent([
         [7, 0],
         [this.width, this.height],
@@ -69,50 +72,47 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .attr('width', this.width)
       .attr('height', this.height)
       .on('click', (event) => {
-        const path = event.path;
-        point = event;
-
-        for (const gItem of path) {
-          if (gItem.childNodes.length > 2) {
-            const g = gItem.childNodes;
-
-            console.log('CLICK', point);
-            for (const item of g) {
-              if (item.textContent === point.toElement.textContent) {
-                console.log('After CLICK', point.toElement.textContent);
-                if (line !== undefined) {
-                  line.remove();
-                }
-
-                line = svg
-                  .append('line')
-                  .attr('class', 'progress-line')
-                  .attr('x2', item.transform.animVal[0].matrix.e);
-              }
-            }
-
-            break;
-          }
-        }
-      })
-      .on('mousedown', (event) => {
-        /*if (line !== undefined && line._groups[0].length) {
+        if (line !== undefined) {
           line.remove();
-        }*/
-        /*console.log('event', event.x);
+        }
 
         line = svg
           .append('line')
           .attr('class', 'progress-line')
-          .attr('x2', event.x);*/
+          .attr('x2', this.rememberLastPoint);
       });
 
     const gGrid = svg.append('g');
 
     const gx = svg.append('g').on('click', (d) => {
       this.emitOnClickTimeLine.emit(d.toElement.innerHTML);
-      /*point = d;
-      console.log('GX', gx);*/
+      point = d;
+
+      const path = d.path;
+
+      for (const gItem of path) {
+        if (gItem.childNodes.length > 2) {
+          const g = gItem.childNodes;
+
+          for (const item of g) {
+            if (item.textContent === d.toElement.textContent) {
+              if (+item.textContent % 10 === 0) {
+                this.rememberLastPoint = item.transform.animVal[0].matrix.e;
+              }
+              console.log('rememberLastPoint', this.rememberLastPoint);
+
+              line = svg
+                .append('line')
+                .attr('class', 'progress-line')
+                .attr('x2', item.transform.animVal[0].matrix.e);
+            }
+          }
+
+          break;
+        }
+      }
+
+      /*console.log('rememberLastPoint', this.rememberLastPoint);*/
     });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
@@ -138,7 +138,6 @@ export class ZoomProgressBarComponent implements AfterViewInit {
           }
         }
       }
-      /*line.attr('width', gx._groups[0][0].width);*/
     }
 
     return Object.assign(svg.node(), {
