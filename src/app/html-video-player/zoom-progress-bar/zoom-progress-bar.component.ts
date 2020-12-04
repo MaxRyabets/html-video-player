@@ -61,37 +61,84 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       g.call((c) => c.selectAll('.x').data(currentX.ticks(12)));
 
     let line;
+    let point;
 
     const svg = d3
       .select(this.chartZoom.nativeElement)
       .append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
-      .on('mousedown', (event) => {
-        if (line !== undefined && line._groups[0].length) {
-          line.remove();
+      .on('click', (event) => {
+        const path = event.path;
+        point = event;
+
+        for (const gItem of path) {
+          if (gItem.childNodes.length > 2) {
+            const g = gItem.childNodes;
+
+            console.log('CLICK', point);
+            for (const item of g) {
+              if (item.textContent === point.toElement.textContent) {
+                console.log('After CLICK', point.toElement.textContent);
+                if (line !== undefined) {
+                  line.remove();
+                }
+
+                line = svg
+                  .append('line')
+                  .attr('class', 'progress-line')
+                  .attr('x2', item.transform.animVal[0].matrix.e);
+              }
+            }
+
+            break;
+          }
         }
+      })
+      .on('mousedown', (event) => {
+        /*if (line !== undefined && line._groups[0].length) {
+          line.remove();
+        }*/
+        /*console.log('event', event.x);
 
         line = svg
           .append('line')
           .attr('class', 'progress-line')
-          .attr('x2', event.x - 60);
+          .attr('x2', event.x);*/
       });
 
     const gGrid = svg.append('g');
 
     const gx = svg.append('g').on('click', (d) => {
       this.emitOnClickTimeLine.emit(d.toElement.innerHTML);
+      /*point = d;
+      console.log('GX', gx);*/
     });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
 
     function zoomed({ transform }): void {
       const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
-      console.log('zx', line);
 
       gx.call(xAxis, zx);
       gGrid.call(grid, zx);
+
+      if (point !== undefined) {
+        // @ts-ignore
+        const g = gx._groups[0][0].childNodes;
+
+        for (const item of g) {
+          if (item.textContent === point.toElement.textContent) {
+            console.log('ZOOM', point.toElement.textContent);
+            line.remove();
+            line = svg
+              .append('line')
+              .attr('class', 'progress-line')
+              .attr('x2', item.transform.animVal[0].matrix.e);
+          }
+        }
+      }
+      /*line.attr('width', gx._groups[0][0].width);*/
     }
 
     return Object.assign(svg.node(), {
