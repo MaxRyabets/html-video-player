@@ -59,45 +59,45 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       g.call((c) => c.selectAll('.x').data(currentX.ticks(12)));
 
     let line;
-    let x0;
-    let point;
+    let tick;
+    let widthTick;
+    const widthGrid = this.width;
 
     const svg = d3
       .select(this.chartZoom.nativeElement)
       .append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
-      .on('click', (event) => {
-        const ticks = [];
-
-        svg.selectAll('.tick').each((tick) => {
-          ticks.push(tick);
-        });
-
-        x0 = x.invert(event.layerX);
-
-        const bisect = d3.bisector((d) => d).right;
-        const nearestTick = bisect(ticks, x0);
-        point = ticks[nearestTick];
-
-        this.emitOnClickTimeLine.emit(ticks[nearestTick].toString());
-
-        if (line !== undefined) {
-          line.remove();
-        }
-
-        line = svg
-          .append('line')
-          .attr('class', 'progress-line')
-          .attr('x2', event.layerX);
-      });
-
-    /*line = svg.append('line').attr('class', 'progress-line');*/
+      .on('click', (event) => {});
 
     const gGrid = svg.append('g');
 
-    const gx = svg.append('g').on('click', (d) => {
-      this.emitOnClickTimeLine.emit(d.toElement.innerHTML);
+    const gx = svg.append('g').on('click', (event) => {
+      this.emitOnClickTimeLine.emit(event.toElement.innerHTML);
+
+      const ticks = [];
+
+      svg.selectAll('.tick').each((currentTick) => {
+        ticks.push(currentTick);
+      });
+
+      const textContentTick = +event.toElement.textContent;
+
+      const tickIndex = ticks.findIndex(
+        (currentTick) => currentTick === textContentTick
+      );
+      tick = ticks[tickIndex];
+
+      this.emitOnClickTimeLine.emit(tick.toString());
+
+      if (line !== undefined) {
+        line.remove();
+      }
+
+      line = svg
+        .append('line')
+        .attr('class', 'progress-line')
+        .attr('x2', event.layerX);
     });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
@@ -118,33 +118,51 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         ticks.push(currentTick);
       });
 
-      const bisect = d3.bisector((d) => d).right;
+      let nearestPointAfterZoom = ticks.findIndex(
+        (currentTick) => currentTick === tick
+      );
 
-      const nearestPointAfterZoom = bisect(ticks, x0);
+      if (nearestPointAfterZoom === -1) {
+        const closestRightTick = Math.min(
+          ...ticks.filter((currentTick) => currentTick > tick)
+        );
 
-      const tick = svg
+        const closestLeftTick = Math.max(
+          ...ticks.filter((currentTick) => currentTick < tick)
+        );
+
+        if (closestLeftTick === -Infinity) {
+          line.attr('x2', 0).style('stroke-width', 0);
+          return;
+        }
+
+        if (closestRightTick === Infinity) {
+          line.attr('x2', widthGrid);
+          return;
+        }
+
+        const differentTickRight = closestRightTick - tick;
+        const differentTickLeft = tick - closestLeftTick;
+
+        const foundIndexNearestTick =
+          differentTickRight <= differentTickLeft
+            ? closestRightTick
+            : closestLeftTick;
+
+        nearestPointAfterZoom = ticks.findIndex(
+          (currentTick) => currentTick === foundIndexNearestTick
+        );
+
+        tick = foundIndexNearestTick;
+      }
+
+      const foundTickNode = svg
         .select(`.tick:nth-child(${nearestPointAfterZoom + 2})`)
         .node();
 
-      console.log(
-        svg.select(`.tick:nth-child(${nearestPointAfterZoom + 2})`).node(),
-        nearestPointAfterZoom
-      );
-
       // @ts-ignore
-      const widthTick = tick.getCTM().e;
-
-      console.log('nearestPointWithAfterZoom', nearestPointAfterZoom);
-
-      if (ticks.includes(point)) {
-        console.log('includes', ticks.includes(point));
-        line.attr('x2', widthTick).style('stroke-width', 5);
-
-        return;
-      }
-
-      console.log('not includes', ticks.includes(point));
-      line.attr('x2', 0).style('stroke-width', 0);
+      widthTick = foundTickNode.getCTM().e;
+      line.attr('x2', widthTick).style('stroke-width', 5);
     }
 
     return Object.assign(svg.node(), {
