@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -13,7 +12,6 @@ import * as d3 from 'd3';
   selector: 'app-zoom-progress-bar',
   templateUrl: './zoom-progress-bar.component.html',
   styleUrls: ['./zoom-progress-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ZoomProgressBarComponent implements AfterViewInit {
   @ViewChild('chart') chartZoom;
@@ -26,15 +24,12 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   height = 30;
 
   k = this.height / this.width;
-  private rememberLastPoint: any;
 
   ngAfterViewInit(): void {
     this.createChart();
   }
 
   private createChart(): any {
-    const initGrid = [];
-
     const zoom = d3
       .zoom()
       .scaleExtent([1, 8])
@@ -64,7 +59,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       g.call((c) => c.selectAll('.x').data(currentX.ticks(12)));
 
     let line;
-    let point;
+    let x0;
 
     const svg = d3
       .select(this.chartZoom.nativeElement)
@@ -72,6 +67,18 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       .attr('width', this.width)
       .attr('height', this.height)
       .on('click', (event) => {
+        const ticks = [];
+
+        svg.selectAll('.tick').each((tick) => {
+          ticks.push(tick);
+        });
+
+        x0 = x.invert(event.layerX);
+        const bisect = d3.bisector((d) => d).right;
+
+        const nearestTick = bisect(ticks, x0);
+        this.emitOnClickTimeLine.emit(ticks[nearestTick].toString());
+
         if (line !== undefined) {
           line.remove();
         }
@@ -79,40 +86,15 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         line = svg
           .append('line')
           .attr('class', 'progress-line')
-          .attr('x2', this.rememberLastPoint);
+          .attr('x2', event.layerX);
       });
+
+    /*line = svg.append('line').attr('class', 'progress-line');*/
 
     const gGrid = svg.append('g');
 
     const gx = svg.append('g').on('click', (d) => {
       this.emitOnClickTimeLine.emit(d.toElement.innerHTML);
-      point = d;
-
-      const path = d.path;
-
-      for (const gItem of path) {
-        if (gItem.childNodes.length > 2) {
-          const g = gItem.childNodes;
-
-          for (const item of g) {
-            if (item.textContent === d.toElement.textContent) {
-              if (+item.textContent % 10 === 0) {
-                this.rememberLastPoint = item.transform.animVal[0].matrix.e;
-              }
-              console.log('rememberLastPoint', this.rememberLastPoint);
-
-              line = svg
-                .append('line')
-                .attr('class', 'progress-line')
-                .attr('x2', item.transform.animVal[0].matrix.e);
-            }
-          }
-
-          break;
-        }
-      }
-
-      /*console.log('rememberLastPoint', this.rememberLastPoint);*/
     });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
@@ -123,21 +105,29 @@ export class ZoomProgressBarComponent implements AfterViewInit {
       gx.call(xAxis, zx);
       gGrid.call(grid, zx);
 
-      if (point !== undefined) {
-        // @ts-ignore
-        const g = gx._groups[0][0].childNodes;
-
-        for (const item of g) {
-          if (item.textContent === point.toElement.textContent) {
-            console.log('ZOOM', point.toElement.textContent);
-            line.remove();
-            line = svg
-              .append('line')
-              .attr('class', 'progress-line')
-              .attr('x2', item.transform.animVal[0].matrix.e);
-          }
-        }
+      if (line === undefined) {
+        return;
       }
+
+      const ticks = [];
+
+      svg.selectAll('.tick').each((currentTick) => {
+        ticks.push(currentTick);
+      });
+
+      const bisect = d3.bisector((d) => d).right;
+
+      const nearestPointAfterZoom = bisect(ticks, x0);
+
+      const tick = svg
+        .select(`.tick:nth-child(${nearestPointAfterZoom + 2})`)
+        .node();
+
+      // @ts-ignore
+      const widthTick = tick.getCTM().e;
+
+      console.log('nearestPointWithAfterZoom', nearestPointAfterZoom);
+      line.attr('x2', widthTick);
     }
 
     return Object.assign(svg.node(), {

@@ -7,6 +7,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   stroke: #75beda;
   stroke-width: 5px;
   stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .chart-line g line{

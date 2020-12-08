@@ -168,6 +168,9 @@ export class HtmlVideoPlayerComponent
 
   calculateDurationFromPlayList(duration: string): void {
     this.duration = duration;
+    /*console.log(this.videoElement.duration);
+    this.secondsDuration = Math.round(this.videoElement.duration);
+    console.log('this.secondsDuration', this.secondsDuration);*/
   }
 
   ngAfterViewInit(): void {
