@@ -397,6 +397,14 @@ export class HtmlVideoPlayerComponent
         this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
         this.updateTimeVideo(currentTimeVideoPlayed);
+
+        if (
+          Math.floor(this.videoElement.currentTime) ===
+          Math.floor(this.videoElement.duration)
+        ) {
+          console.log('test');
+          this.pause();
+        }
       })
     );
   }

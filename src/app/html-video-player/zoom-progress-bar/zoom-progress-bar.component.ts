@@ -46,7 +46,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     const x = d3
       .scaleLinear()
       .domain([-1, this.duration])
-      .range([0, this.width]);
+      .range([0, this.width + 2]);
 
     const xAxis = (g, currentX) =>
       g
