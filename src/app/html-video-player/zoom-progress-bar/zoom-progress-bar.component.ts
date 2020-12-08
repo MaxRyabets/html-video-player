@@ -60,6 +60,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
     let line;
     let x0;
+    let point;
 
     const svg = d3
       .select(this.chartZoom.nativeElement)
@@ -74,9 +75,11 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         });
 
         x0 = x.invert(event.layerX);
-        const bisect = d3.bisector((d) => d).right;
 
+        const bisect = d3.bisector((d) => d).right;
         const nearestTick = bisect(ticks, x0);
+        point = ticks[nearestTick];
+
         this.emitOnClickTimeLine.emit(ticks[nearestTick].toString());
 
         if (line !== undefined) {
@@ -123,11 +126,25 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         .select(`.tick:nth-child(${nearestPointAfterZoom + 2})`)
         .node();
 
+      console.log(
+        svg.select(`.tick:nth-child(${nearestPointAfterZoom + 2})`).node(),
+        nearestPointAfterZoom
+      );
+
       // @ts-ignore
       const widthTick = tick.getCTM().e;
 
       console.log('nearestPointWithAfterZoom', nearestPointAfterZoom);
-      line.attr('x2', widthTick);
+
+      if (ticks.includes(point)) {
+        console.log('includes', ticks.includes(point));
+        line.attr('x2', widthTick).style('stroke-width', 5);
+
+        return;
+      }
+
+      console.log('not includes', ticks.includes(point));
+      line.attr('x2', 0).style('stroke-width', 0);
     }
 
     return Object.assign(svg.node(), {
