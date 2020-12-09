@@ -31,7 +31,6 @@ export class HtmlVideoPlayerComponent
   isMute = false;
 
   videoZoom = 1;
-  progressBarZoom = 0;
 
   destroy$ = new Subject();
 
@@ -57,12 +56,11 @@ export class HtmlVideoPlayerComponent
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
 
-  hours = 0;
-  minutes = 0;
   seconds = 0;
   duration = '';
   secondsDuration = 0;
   currentTime = '';
+  currentTimeForProgressBar = 0;
 
   ngOnInit(): void {}
 
@@ -168,6 +166,7 @@ export class HtmlVideoPlayerComponent
 
   calculateDurationFromPlayList(duration: string): void {
     this.duration = duration;
+    this.secondsDuration = Math.round(this.videoElement.duration);
     /*console.log(this.videoElement.duration);
     this.secondsDuration = Math.round(this.videoElement.duration);
     console.log('this.secondsDuration', this.secondsDuration);*/
@@ -393,6 +392,10 @@ export class HtmlVideoPlayerComponent
           return;
         }
 
+        this.currentTimeForProgressBar = Math.floor(
+          this.videoElement.currentTime
+        );
+
         this.progressBarVideoValue = currentTimeVideoPlayed;
         this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
@@ -402,7 +405,6 @@ export class HtmlVideoPlayerComponent
           Math.floor(this.videoElement.currentTime) ===
           Math.floor(this.videoElement.duration)
         ) {
-          console.log('test');
           this.pause();
         }
       })

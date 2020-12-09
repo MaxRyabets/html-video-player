@@ -3,6 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -13,10 +14,11 @@ import * as d3 from 'd3';
   templateUrl: './zoom-progress-bar.component.html',
   styleUrls: ['./zoom-progress-bar.component.scss'],
 })
-export class ZoomProgressBarComponent implements AfterViewInit {
+export class ZoomProgressBarComponent implements AfterViewInit, OnChanges {
   @ViewChild('chart') chartZoom;
 
   @Input() duration;
+  @Input() currentTimeForProgressBar;
   @Output()
   emitOnClickTimeLine: EventEmitter<string> = new EventEmitter<string>();
 
@@ -24,6 +26,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   height = 30;
 
   k = this.height / this.width;
+  marginRightTimeLine = 0;
 
   ngAfterViewInit(): void {
     this.createChart();
@@ -62,13 +65,13 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     let tick;
     let widthTick;
     const widthGrid = this.width;
+    const currentTimeForProgressBar = this.currentTimeForProgressBar;
 
     const svg = d3
       .select(this.chartZoom.nativeElement)
       .append('svg')
       .attr('width', this.width)
-      .attr('height', this.height)
-      .on('click', (event) => {});
+      .attr('height', this.height);
 
     const gGrid = svg.append('g');
 
@@ -170,5 +173,21 @@ export class ZoomProgressBarComponent implements AfterViewInit {
         svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
       },
     });
+  }
+
+  ngOnChanges(): void {
+    if (document.querySelector('svg') !== null) {
+      const currentTimeVideoPlayed = Math.floor(
+        (100 / this.duration) * this.currentTimeForProgressBar
+      );
+
+      this.marginRightTimeLine += 6;
+      console.log(currentTimeVideoPlayed);
+
+      d3.select('svg')
+        .append('line')
+        .attr('class', 'progress-line')
+        .attr('x2', this.currentTimeForProgressBar + this.marginRightTimeLine);
+    }
   }
 }

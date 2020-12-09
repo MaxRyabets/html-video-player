@@ -36,6 +36,7 @@
         <ng-container *ngIf="shouldSecondsDuration()">
           <app-zoom-progress-bar
             [duration]="secondsDuration"
+            [currentTimeForProgressBar]="currentTimeForProgressBar"
             (emitOnClickTimeLine)="timeUpdateAfterClickOnTimeline($event)"
           ></app-zoom-progress-bar>
         </ng-container>
