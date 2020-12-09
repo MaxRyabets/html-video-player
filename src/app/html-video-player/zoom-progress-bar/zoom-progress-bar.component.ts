@@ -1,9 +1,9 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -13,12 +13,15 @@ import * as d3 from 'd3';
   selector: 'app-zoom-progress-bar',
   templateUrl: './zoom-progress-bar.component.html',
   styleUrls: ['./zoom-progress-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZoomProgressBarComponent implements AfterViewInit, OnChanges {
+export class ZoomProgressBarComponent implements AfterViewInit {
   @ViewChild('chart') chartZoom;
 
   @Input() duration;
-  @Input() currentTimeForProgressBar;
+  @Input() set currentTimeForProgressBar(time) {
+    this.updateTimeLine(time);
+  }
   @Output()
   emitOnClickTimeLine: EventEmitter<string> = new EventEmitter<string>();
 
@@ -65,7 +68,6 @@ export class ZoomProgressBarComponent implements AfterViewInit, OnChanges {
     let tick;
     let widthTick;
     const widthGrid = this.width;
-    const currentTimeForProgressBar = this.currentTimeForProgressBar;
 
     const svg = d3
       .select(this.chartZoom.nativeElement)
@@ -161,9 +163,8 @@ export class ZoomProgressBarComponent implements AfterViewInit, OnChanges {
 
       const foundTickNode = svg
         .select(`.tick:nth-child(${nearestPointAfterZoom + 2})`)
-        .node();
+        .node() as SVGGraphicsElement;
 
-      // @ts-ignore
       widthTick = foundTickNode.getCTM().e;
       line.attr('x2', widthTick).style('stroke-width', 5);
     }
@@ -175,19 +176,14 @@ export class ZoomProgressBarComponent implements AfterViewInit, OnChanges {
     });
   }
 
-  ngOnChanges(): void {
+  private updateTimeLine(time): void {
     if (document.querySelector('svg') !== null) {
-      const currentTimeVideoPlayed = Math.floor(
-        (100 / this.duration) * this.currentTimeForProgressBar
-      );
-
       this.marginRightTimeLine += 6;
-      console.log(currentTimeVideoPlayed);
 
       d3.select('svg')
         .append('line')
         .attr('class', 'progress-line')
-        .attr('x2', this.currentTimeForProgressBar + this.marginRightTimeLine);
+        .attr('x2', time + this.marginRightTimeLine);
     }
   }
 }
