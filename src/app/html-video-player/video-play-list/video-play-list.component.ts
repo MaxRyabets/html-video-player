@@ -19,7 +19,6 @@ import { VideoDuration } from '../shared/video-duration';
 })
 export class VideoPlayListComponent implements OnInit, OnDestroy {
   @Output() emitVideo: EventEmitter<PlayList> = new EventEmitter<PlayList>();
-  @Output() emitDuration: EventEmitter<string> = new EventEmitter<string>();
 
   playList: PlayList[] = [];
 
@@ -50,8 +49,8 @@ export class VideoPlayListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  clickOnVideo(list: PlayList): void {
-    this.emitVideo.emit(list);
+  onClickVideo(video: PlayList): void {
+    this.emitVideo.emit(video);
   }
 
   calculateDuration(videoDuration: VideoDuration): void {
@@ -62,7 +61,14 @@ export class VideoPlayListComponent implements OnInit, OnDestroy {
     });
   }
 
-  onClickVideo(duration: string): void {
-    this.emitDuration.emit(duration);
+  remove(id: number): void {
+    this.videoPlayListService
+      .removeById(id)
+      .pipe(
+        tap((playList) => {
+          this.playList = playList;
+        })
+      )
+      .subscribe();
   }
 }

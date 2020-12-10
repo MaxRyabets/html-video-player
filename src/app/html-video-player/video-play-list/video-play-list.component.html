@@ -1,7 +1,6 @@
 <div
   *ngFor="let list of playList"
   class="container-video"
-  (click)="clickOnVideo(list)"
 >
   <div class="video">
     <video
@@ -9,7 +8,7 @@
       [appCalculateTimeVideo]="video"
       [videoId]="list.id"
       (calcDuration)="calculateDuration($event)"
-      (click)="onClickVideo(list.duration)"
+      (click)="onClickVideo(list)"
       [width]="list.videoOptions.width"
       [height]="list.videoOptions.height"
       [src]="list.videoOptions.src"
@@ -17,6 +16,7 @@
       [muted]="list.videoOptions.muted"
       preload="metadata"
     ></video>
+    <button class="remove" (click)="remove(list.id)">&times;</button>
     <span class="video-duration">
       {{list.duration}}
     </span>

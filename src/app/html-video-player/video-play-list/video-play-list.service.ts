@@ -12,4 +12,8 @@ export class VideoPlayListService {
   getPlayList(): Observable<PlayList[]> {
     return of<PlayList[]>(this.playList);
   }
+
+  removeById(id): Observable<PlayList[]> {
+    return of<PlayList[]>(playList.filter((list) => list.id !== id));
+  }
 }

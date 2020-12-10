@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -29,8 +28,6 @@ export class HtmlVideoPlayerComponent
   isPlay = false;
   isMute = false;
 
-  videoZoom = 1;
-
   destroy$ = new Subject();
 
   // for local src ../../assets/videos/movie.mp4
@@ -50,7 +47,6 @@ export class HtmlVideoPlayerComponent
   @ViewChild('bufferedAmount') bufferedAmount;
   @ViewChild('canvas') canvas;
   @ViewChild('videoControls') videoControls;
-  @ViewChild('videoPlayList', { read: ElementRef }) videoPlayList;
   @ViewChild('timelineTr') timelineTr;
 
   progressBarVideoValue = 0;
@@ -135,10 +131,6 @@ export class HtmlVideoPlayerComponent
     this.duration = videoDuration.duration;
   }
 
-  calculateDurationFromPlayList(duration: string): void {
-    this.duration = duration;
-  }
-
   ngAfterViewInit(): void {
     const popupOtherControls$ = this.clickOnPopupOtherControls();
 
@@ -150,7 +142,7 @@ export class HtmlVideoPlayerComponent
 
     const updateProgressBar$ = this.timeUpdateProgressBar();
 
-    const replaceVideoFromPlayList$ = this.clickOnVideoPlayList();
+    /*const replaceVideoFromPlayList$ = this.clickOnVideoPlayList();*/
 
     const videoPlayer$ = this.clickOnVideoPlayer();
 
@@ -160,7 +152,7 @@ export class HtmlVideoPlayerComponent
       playPause$,
       progressBarIfVideoOnPause$,
       updateProgressBar$,
-      replaceVideoFromPlayList$,
+
       videoPlayer$
     ).subscribe();
   }
@@ -168,6 +160,11 @@ export class HtmlVideoPlayerComponent
   changePropertiesVideo(video: PlayList): void {
     this.videoOptions.src = video.videoOptions.src;
     this.videoOptions.poster = video.videoOptions.poster;
+    this.duration = video.duration;
+
+    console.log('video', video);
+
+    this.startPlayVideoOfPlayList();
   }
 
   ngOnDestroy(): void {
@@ -254,10 +251,6 @@ export class HtmlVideoPlayerComponent
       !isNaN(segment) &&
       this.endSegment === undefined
     );
-  }
-
-  private changeVideoZoom(): void {
-    this.videoElement.style.transform = `scale(${this.videoZoom}) rotate(0deg)`;
   }
 
   private clickOnPopupOtherControls(): Observable<MouseEvent> {
@@ -376,21 +369,6 @@ export class HtmlVideoPlayerComponent
     );
   }
 
-  private clickOnVideoPlayList(): Observable<MouseEvent> {
-    return fromEvent(this.videoPlayList.nativeElement, 'click').pipe(
-      takeUntil(this.destroy$),
-      tap((e: MouseEvent) => {
-        this.pause();
-
-        this.videoElement.currentTime = 0;
-        this.progressVideo.innerHTML = '0% played';
-        this.progressBarVideoValue = this.progressVideo.value = 0;
-
-        this.play();
-      })
-    );
-  }
-
   private isClickLoopSegment(): boolean {
     return (
       this.isDisabledLoopVideoSegment &&
@@ -406,5 +384,16 @@ export class HtmlVideoPlayerComponent
     }
 
     this.pause();
+  }
+
+  private startPlayVideoOfPlayList(): void {
+    this.pause();
+
+    this.videoElement.play().then((_) => {
+      this.videoElement.currentTime = 0;
+      this.progressVideo.innerHTML = '0% played';
+      this.progressBarVideoValue = this.progressVideo.value = 0;
+      this.play();
+    });
   }
 }
