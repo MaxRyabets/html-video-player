@@ -202,8 +202,6 @@ export class HtmlVideoPlayerComponent
       hours = hours.toString().padStart(2, '0');
     }
 
-    console.log(minutes, seconds);
-
     this.currentTime = `${
       hours !== '00' ? hours + ':' : ''
     }${minutes}:${seconds}`;
@@ -344,9 +342,6 @@ export class HtmlVideoPlayerComponent
     return fromEvent(this.videoElement, 'timeupdate').pipe(
       takeUntil(this.destroy$),
       tap((e: Timestamp) => {
-        console.log('currentTime', this.videoElement.currentTime);
-        console.log('duration', this.videoElement.duration);
-
         if (
           Math.floor(this.videoElement.currentTime) ===
           Math.floor(this.videoElement.duration)
@@ -376,7 +371,6 @@ export class HtmlVideoPlayerComponent
         this.progressBarVideoValue = currentTimeVideoPlayed;
         this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
-        console.log('currentTimeVideoPlayed', currentTimeVideoPlayed);
         this.updateTimeVideo(this.videoElement.currentTime);
       })
     );

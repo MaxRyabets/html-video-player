@@ -55,6 +55,7 @@ input[type="range"] {
       flex-direction: column;
 
       .videoFullScreen {
+        object-fit: contain;
         width: 100%;
         height: 100%;
       }
