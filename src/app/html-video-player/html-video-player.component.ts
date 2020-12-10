@@ -30,14 +30,13 @@ export class HtmlVideoPlayerComponent
   isMute = false;
 
   videoZoom = 1;
-  progressBarZoom = 0;
 
   destroy$ = new Subject();
 
   // for local src ../../assets/videos/movie.mp4
   videoOptions: VideoOptions = {
     width: 700,
-    height: 300,
+    height: 400,
     src: 'http://html5videoformatconverter.com/data/images/happyfit2.mp4',
     muted: '',
     poster: '',
@@ -57,8 +56,6 @@ export class HtmlVideoPlayerComponent
   progressBarVideoValue = 0;
   progressBarVolumeValue = 1;
 
-  hours = 0;
-  minutes = 0;
   seconds = 0;
   duration = '';
   currentTime = '';
@@ -134,68 +131,8 @@ export class HtmlVideoPlayerComponent
     );
   }
 
-  zoomInVideo(): void {
-    if (this.videoZoom > 2) {
-      return;
-    }
-    this.videoZoom += 0.1;
-
-    this.changeVideoZoom();
-  }
-
-  zoomOutVideo(): void {
-    if (this.videoZoom === 1) {
-      return;
-    }
-    this.videoZoom -= 0.1;
-
-    this.changeVideoZoom();
-  }
-
-  zoomInProgressBar(): void {
-    if (this.progressBarZoom > 2) {
-      return;
-    }
-
-    /*const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
-
-    if (lenTimelineTr) {
-      this.removeCellsTimeline();
-    }*/
-
-    this.progressBarZoom++;
-
-    if (this.progressBarZoom === 1) {
-      const divider = 5;
-      this.addCellsTimeline(divider);
-    }
-  }
-
-  zoomOutProgressBar(): void {
-    if (this.progressBarZoom === 0) {
-      this.addDefaultZoomForProgressBar();
-
-      return;
-    }
-
-    if (this.progressBarZoom === 1) {
-      this.removeCellsTimeline();
-
-      this.progressBarZoom--;
-    }
-
-    if (this.progressBarZoom === 0) {
-      this.addDefaultZoomForProgressBar();
-    }
-  }
-
   calculateDurationAfterFirstInitVideo(videoDuration: VideoDuration): void {
     this.duration = videoDuration.duration;
-
-    // 3600 sec in 1 hour
-    if (this.videoElement.duration < 3600) {
-      this.addDefaultZoomForProgressBar();
-    }
   }
 
   calculateDurationFromPlayList(duration: string): void {
@@ -239,9 +176,9 @@ export class HtmlVideoPlayerComponent
   }
 
   private calculateTime(timestamp): Timestamp {
-    const hours = Math.floor(timestamp / 60 / 60);
-    const minutes = Math.floor(timestamp / 60) - hours * 60;
-    const seconds = Math.floor(timestamp % 60);
+    const hours = Math.floor(timestamp / 3600);
+    const minutes = Math.floor((timestamp % 3600) / 60);
+    const seconds = Math.floor((timestamp % 3600) % 60);
 
     return {
       hours,
@@ -264,6 +201,8 @@ export class HtmlVideoPlayerComponent
     if (hours < 10) {
       hours = hours.toString().padStart(2, '0');
     }
+
+    console.log(minutes, seconds);
 
     this.currentTime = `${
       hours !== '00' ? hours + ':' : ''
@@ -405,6 +344,18 @@ export class HtmlVideoPlayerComponent
     return fromEvent(this.videoElement, 'timeupdate').pipe(
       takeUntil(this.destroy$),
       tap((e: Timestamp) => {
+        console.log('currentTime', this.videoElement.currentTime);
+        console.log('duration', this.videoElement.duration);
+
+        if (
+          Math.floor(this.videoElement.currentTime) ===
+          Math.floor(this.videoElement.duration)
+        ) {
+          this.updateTimeVideo(this.videoElement.duration);
+
+          this.pause();
+        }
+
         if (this.isClickLoopSegment()) {
           this.videoElement.currentTime = this.startSegment;
         }
@@ -425,7 +376,8 @@ export class HtmlVideoPlayerComponent
         this.progressBarVideoValue = currentTimeVideoPlayed;
         this.progressVideo.innerHTML = currentTimeVideoPlayed + '% played';
 
-        this.updateTimeVideo(currentTimeVideoPlayed);
+        console.log('currentTimeVideoPlayed', currentTimeVideoPlayed);
+        this.updateTimeVideo(this.videoElement.currentTime);
       })
     );
   }
@@ -460,42 +412,5 @@ export class HtmlVideoPlayerComponent
     }
 
     this.pause();
-  }
-
-  private addCellsTimeline(divider: number): void {
-    /*for (let i = 0; i < this.videoElement.duration; i++) {
-      if (i % divider === 0 && i % 20 !== 0 && divider !== 20 && i !== 0) {
-        const td = document.createElement('td');
-        td.style.borderTop = '1px solid black';
-        td.style.borderBottom = '1px solid black';
-        td.style.borderRight = '5px solid slateblue';
-        td.style.borderLeft = '5px solid slateblue';
-
-        this.timelineTr.nativeElement.appendChild(td);
-      }
-
-      if (i % divider === 0 && i % 20 === 0) {
-        const td = document.createElement('td');
-        td.style.borderTop = '1px solid black';
-        td.style.borderBottom = '1px solid black';
-        td.style.borderRight = '5px solid #0075ff';
-        td.style.borderLeft = '5px solid #0075ff';
-
-        this.timelineTr.nativeElement.appendChild(td);
-      }
-    }*/
-  }
-
-  private removeCellsTimeline(): void {
-    /*const lenTimelineTr = this.timelineTr.nativeElement.cells.length;
-    for (let i = 0; i < lenTimelineTr; i++) {
-      this.timelineTr.nativeElement.deleteCell(0);
-    }*/
-  }
-
-  private addDefaultZoomForProgressBar(): void {
-    const divider = 20;
-
-    this.addCellsTimeline(divider);
   }
 }
