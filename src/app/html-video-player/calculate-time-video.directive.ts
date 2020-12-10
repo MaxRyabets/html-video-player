@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Timestamp } from './timestamp';
 import { fromEvent, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
 import { VideoDuration } from './shared/video-duration';
 
 @Directive({
@@ -76,6 +76,7 @@ export class CalculateTimeVideoDirective implements AfterViewInit, OnDestroy {
     fromEvent(window, 'load')
       .pipe(
         takeUntil(this.destroy$),
+        debounceTime(200),
         tap(() => {
           this.calculateDuration();
         })
