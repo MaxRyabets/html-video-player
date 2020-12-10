@@ -31,11 +31,19 @@ export class ZoomProgressBarComponent implements AfterViewInit {
   k = this.height / this.width;
   marginRightTimeLine = 0;
 
+  x2ForProgressLine = 0;
+
   ngAfterViewInit(): void {
     this.createChart();
   }
 
   private createChart(): any {
+    const svg = d3
+      .select(this.chartZoom.nativeElement)
+      .append('svg')
+      .attr('width', this.width)
+      .attr('height', this.height);
+
     const zoom = d3
       .zoom()
       .scaleExtent([1, 8])
@@ -64,16 +72,14 @@ export class ZoomProgressBarComponent implements AfterViewInit {
     const grid = (g, currentX) =>
       g.call((c) => c.selectAll('.x').data(currentX.ticks(12)));
 
-    let line;
+    const line = svg
+      .append('line')
+      .attr('class', 'progress-line')
+      .attr('x2', 0)
+      .style('stroke-width', 0);
     let tick;
     let widthTick;
     const widthGrid = this.width;
-
-    const svg = d3
-      .select(this.chartZoom.nativeElement)
-      .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height);
 
     const gGrid = svg.append('g');
 
@@ -95,14 +101,8 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
       this.emitOnClickTimeLine.emit(tick.toString());
 
-      if (line !== undefined) {
-        line.remove();
-      }
-
-      line = svg
-        .append('line')
-        .attr('class', 'progress-line')
-        .attr('x2', event.layerX);
+      line.attr('x2', event.layerX).style('stroke-width', 5);
+      this.x2ForProgressLine = event.layerX;
     });
 
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
@@ -112,6 +112,7 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
       gx.call(xAxis, zx);
       gGrid.call(grid, zx);
+      /*line.attr('transform', transform);*/
 
       if (line === undefined) {
         return;
@@ -178,12 +179,21 @@ export class ZoomProgressBarComponent implements AfterViewInit {
 
   private updateTimeLine(time): void {
     if (document.querySelector('svg') !== null) {
-      this.marginRightTimeLine += 6;
+      this.marginRightTimeLine += 7.1;
 
-      d3.select('svg')
-        .append('line')
-        .attr('class', 'progress-line')
-        .attr('x2', time + this.marginRightTimeLine);
+      console.log('time', time);
+
+      // if click on some tick
+      if (this.x2ForProgressLine !== 0) {
+        d3.select('line')
+          .attr('x2', this.x2ForProgressLine)
+          .style('stroke-width', 5);
+        this.x2ForProgressLine = 0;
+      } else {
+        d3.select('line')
+          .attr('x2', this.marginRightTimeLine)
+          .style('stroke-width', 5);
+      }
     }
   }
 }
