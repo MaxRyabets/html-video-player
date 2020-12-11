@@ -1,27 +1,29 @@
-<div
-  *ngFor="let list of playList"
-  class="container-video"
->
-  <div class="video">
-    <video
-      #video
-      [appCalculateTimeVideo]="video"
-      [videoId]="list.id"
-      (calcDuration)="calculateDuration($event)"
-      (click)="onClickVideo(list)"
-      [width]="list.videoOptions.width"
-      [height]="list.videoOptions.height"
-      [src]="list.videoOptions.src"
-      [poster]="list.videoOptions.poster"
-      [muted]="list.videoOptions.muted"
-      preload="metadata"
-    ></video>
-    <button class="remove" (click)="remove(list.id)">&times;</button>
-    <span class="video-duration">
-      {{list.duration}}
-    </span>
+<section appDnd (fileDropped)="uploadFile($event)">
+  <div
+    *ngFor="let list of playList"
+    class="container-video"
+  >
+    <div class="video">
+      <video
+        #video
+        [appCalculateTimeVideo]="video"
+        [videoId]="list.id"
+        (calcDuration)="calculateDuration($event)"
+        (click)="onClickVideo(list)"
+        [width]="list.videoOptions.width"
+        [height]="list.videoOptions.height"
+        [src]="list.videoOptions.src"
+        [poster]="list.videoOptions.poster"
+        [muted]="list.videoOptions.muted"
+        preload="metadata"
+      ></video>
+      <button class="remove" (click)="remove(list.id)">&times;</button>
+      <span class="video-duration">
+        {{list.duration}}
+      </span>
+    </div>
+    <div class="title-video">
+      <span>{{list.title}}</span>
+    </div>
   </div>
-  <div class="title-video">
-    <span>{{list.title}}</span>
-  </div>
-</div>
+</section>
